@@ -2,94 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
-    <!-- Modern, stable flipbook library (No jQuery required) -->
-    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
     <style>
+        * { box-sizing: border-box; }
         body {
-            background-color: #222;
+            background-color: #1a1a1a;
             margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+        #book-wrapper {
+            width: 92vw;
+            height: 82vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            font-family: sans-serif;
         }
         .page {
-            background-color: #fff;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            background-color: #ffffff;
             overflow: hidden;
         }
         .page img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            background-color: #fff;
+            display: block;
+            background-color: #ffffff;
         }
-        #instructions {
-            position: absolute;
-            bottom: 20px;
-            color: #aaa;
+        .controls {
+            margin-top: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            color: #ccc;
             font-size: 14px;
-            text-align: center;
-            width: 100%;
-            pointer-events: none;
             z-index: 100;
         }
+        .btn {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn:hover { background: #555; }
     </style>
 </head>
 <body>
 
-<!-- On-screen instructions -->
-<div id="instructions">Swipe, drag corners, or use Left/Right arrow keys</div>
+<div id="book-wrapper">
+    <div id="flipbook"></div>
+</div>
 
-<!-- The book container -->
-<div id="flipbook"></div>
+<div class="controls">
+    <button class="btn" id="prevBtn">&#8592; Prev</button>
+    <span id="pageInfo">Swipe or click corners to flip</span>
+    <button class="btn" id="nextBtn">Next &#8594;</button>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const flipbookEl = document.getElementById('flipbook');
-        
-        // --- CHANGE THIS NUMBER FOR YOUR OTHER FOLDERS ---
-        const totalPages = 14; 
+        const totalPages = 14;
 
-        // 1. Inject the pages automatically
         for (let i = 1; i <= totalPages; i++) {
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page';
-            // %20 handles the spaces in file names. The onerror catches extension issues.
-            pageDiv.innerHTML = '<img src="Page%20' + i + '.jpg" onerror="this.src=\'Page%20' + i + '.JPG\'" alt="Page ' + i + '">';
+            if (i === 1 || i === totalPages) {
+                pageDiv.setAttribute('data-density', 'hard');
+            }
+            pageDiv.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
             flipbookEl.appendChild(pageDiv);
         }
 
-        // 2. Initialize the modern PageFlip engine
         const pageFlip = new St.PageFlip(flipbookEl, {
-            width: 500, // Base width
-            height: 500, // Base height (1:1 ratio for your 210x210mm brochure)
-            size: "fit", // Automatically fits the screen flawlessly
-            minWidth: 300,
-            maxWidth: 1000,
-            minHeight: 300,
-            maxHeight: 1000,
-            showCover: true, // Makes Page 1 a hard cover
+            width: 600,
+            height: 450,
+            size: "stretch",
+            minWidth: 280,
+            maxWidth: 1200,
+            minHeight: 210,
+            maxHeight: 900,
+            maxShadowOpacity: 0.5,
+            showCover: true,
             mobileScrollSupport: false,
-            usePortrait: true // Auto-switches to single page on phones
+            usePortrait: true
         });
 
-        // Load the pages into the book
         pageFlip.loadFromHTML(document.querySelectorAll('.page'));
 
-        // Keyboard controls
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 37) pageFlip.flipPrev();
-            if (e.keyCode === 39) pageFlip.flipNext();
-        });
+        document.getElementById('prevBtn').addEventListener('click', () => pageFlip.flipPrev());
+        document.getElementById('nextBtn').addEventListener('click', () => pageFlip.flipNext());
 
-        // Hide instructions once the user turns a page
-        pageFlip.on('flip', function() {
-            document.getElementById('instructions').style.display = 'none';
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+            if (e.key === 'ArrowRight') pageFlip.flipNext();
         });
     });
 </script>
