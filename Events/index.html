@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/page-flip/2.0.7/js/page-flip.browser.js"></script>
+    <!-- Using unpkg CDN which bypasses tracking protection blocks -->
+    <script src="https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
     <style>
         * { box-sizing: border-box; user-select: none; }
         body {
@@ -158,10 +159,9 @@
             flipbookEl.appendChild(pageDiv);
         }
 
-        // Initialize using correct global constructor class (PageFlip)
         setTimeout(() => {
             if (typeof PageFlip === 'undefined') {
-                alert('Library failed to load.');
+                alert('Library failed to load from unpkg.');
                 return;
             }
 
