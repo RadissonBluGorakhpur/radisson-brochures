@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Embedded local fallback engine to bypass all network/CDN blocks -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/page-flip/2.0.7/js/page-flip.browser.js"></script>
     <style>
         * { box-sizing: border-box; user-select: none; }
@@ -159,86 +158,82 @@
             flipbookEl.appendChild(pageDiv);
         }
 
-        // Auto-retry initialization loop until the script fully settles
-        let attempts = 0;
-        const initInterval = setInterval(() => {
-            attempts++;
-            if (typeof St !== 'undefined' && St.PageFlip) {
-                clearInterval(initInterval);
-                
-                const pageFlip = new St.PageFlip(flipbookEl, {
-                    width: 600,
-                    height: 450,
-                    size: "stretch",
-                    minWidth: 300,
-                    maxWidth: 1400,
-                    minHeight: 200,
-                    maxHeight: 1000,
-                    maxShadowOpacity: 0.5,
-                    showCover: true,
-                    mobileScrollSupport: false,
-                    usePortrait: false
-                });
-
-                pageFlip.loadFromHTML(document.querySelectorAll('.page'));
-
-                let soundEnabled = true;
-                let audioCtx = null;
-                function playFlipSound() {
-                    if (!soundEnabled) return;
-                    try {
-                        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                        if (audioCtx.state === 'suspended') audioCtx.resume();
-                        const duration = 0.22;
-                        const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
-                        const data = buffer.getChannelData(0);
-                        for (let j = 0; j < buffer.length; j++) {
-                            data[j] = (Math.random() * 2 - 1) * Math.sin((j/buffer.length) * Math.PI) * 0.28;
-                        }
-                        const noise = audioCtx.createBufferSource();
-                        noise.buffer = buffer;
-                        const filter = audioCtx.createBiquadFilter();
-                        filter.type = 'bandpass';
-                        filter.frequency.value = 900;
-                        noise.connect(filter);
-                        filter.connect(audioCtx.destination);
-                        noise.start();
-                    } catch(e) {}
-                }
-
-                pageFlip.on('flip', (e) => {
-                    playFlipSound();
-                    pageCounter.textContent = (e.data + 1) + ' / ' + totalPages;
-                });
-
-                document.getElementById('prevBtn').addEventListener('click', () => pageFlip.flipPrev());
-                document.getElementById('nextBtn').addEventListener('click', () => pageFlip.flipNext());
-
-                let isZoomed = false;
-                document.getElementById('zoomBtn').addEventListener('click', () => {
-                    isZoomed = !isZoomed;
-                    bookWrapper.classList.toggle('zoomed', isZoomed);
-                    document.getElementById('zoomBtn').classList.toggle('active', isZoomed);
-                });
-
-                document.getElementById('soundBtn').addEventListener('click', () => {
-                    soundEnabled = !soundEnabled;
-                    document.getElementById('soundBtn').classList.toggle('active', soundEnabled);
-                    document.getElementById('soundBtn').textContent = soundEnabled ? 'Sound' : 'Muted';
-                });
-
-                document.getElementById('fsBtn').addEventListener('click', () => {
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen().catch(() => {});
-                    } else {
-                        document.exitFullscreen().catch(() => {});
-                    }
-                });
-            } else if (attempts > 20) {
-                clearInterval(initInterval);
-                console.error("PageFlip library failed to load.");
+        // Initialize using correct global constructor class (PageFlip)
+        setTimeout(() => {
+            if (typeof PageFlip === 'undefined') {
+                alert('Library failed to load.');
+                return;
             }
-        }, 150);
+
+            const pageFlip = new PageFlip(flipbookEl, {
+                width: 600,
+                height: 450,
+                size: "stretch",
+                minWidth: 280,
+                maxWidth: 1200,
+                minHeight: 210,
+                maxHeight: 900,
+                maxShadowOpacity: 0.5,
+                showCover: true,
+                mobileScrollSupport: false,
+                usePortrait: true
+            });
+
+            pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+            let soundEnabled = true;
+            let audioCtx = null;
+            function playFlipSound() {
+                if (!soundEnabled) return;
+                try {
+                    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    const duration = 0.22;
+                    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let j = 0; j < buffer.length; j++) {
+                        data[j] = (Math.random() * 2 - 1) * Math.sin((j/buffer.length) * Math.PI) * 0.28;
+                    }
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.value = 900;
+                    noise.connect(filter);
+                    filter.connect(audioCtx.destination);
+                    noise.start();
+                } catch(e) {}
+            }
+
+            pageFlip.on('flip', (e) => {
+                playFlipSound();
+                pageCounter.textContent = (e.data + 1) + ' / ' + totalPages;
+            });
+
+            document.getElementById('prevBtn').addEventListener('click', () => pageFlip.flipPrev());
+            document.getElementById('nextBtn').addEventListener('click', () => pageFlip.flipNext());
+
+            let isZoomed = false;
+            document.getElementById('zoomBtn').addEventListener('click', () => {
+                isZoomed = !isZoomed;
+                bookWrapper.classList.toggle('zoomed', isZoomed);
+                document.getElementById('zoomBtn').classList.toggle('active', isZoomed);
+            });
+
+            document.getElementById('soundBtn').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                document.getElementById('soundBtn').classList.toggle('active', soundEnabled);
+                document.getElementById('soundBtn').textContent = soundEnabled ? 'Sound' : 'Muted';
+            });
+
+            document.getElementById('fsBtn').addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                } else {
+                    document.exitFullscreen().catch(() => {});
+                }
+            });
+        }, 200);
     });
 </script>
 
