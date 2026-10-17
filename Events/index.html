@@ -8,7 +8,7 @@
     <style>
         * { box-sizing: border-box; user-select: none; }
         body {
-            background: radial-gradient(circle at center, #2b2b2b 0%, #121212 100%);
+            background: #121212;
             margin: 0;
             padding: 0;
             width: 100vw;
@@ -27,8 +27,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(18, 18, 18, 0.65);
-            backdrop-filter: blur(10px);
+            background: rgba(18, 18, 18, 0.85);
             border-bottom: 1px solid rgba(197, 160, 89, 0.25);
             z-index: 200;
         }
@@ -46,69 +45,58 @@
             color: #aaa;
             text-transform: uppercase;
         }
-        #book-viewport {
-            width: 90vw;
+        #presentation-viewport {
+            width: 92vw;
             height: 76vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 1500px;
-        }
-        .book {
             position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
-        .page-sheet {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .slide {
             display: none;
+            width: 100%;
+            height: 100%;
             justify-content: center;
             align-items: center;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
-        .page-sheet.active {
+        .slide.active {
             display: flex;
         }
-        .page-sheet img {
+        .slide img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            background-color: #fff;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            background-color: #ffffff;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
         }
         .controls-dock {
             margin-bottom: 18px;
-            padding: 8px 18px;
+            padding: 8px 20px;
             display: flex;
-            gap: 12px;
+            gap: 15px;
             align-items: center;
-            background: rgba(25, 25, 25, 0.75);
-            backdrop-filter: blur(12px);
+            background: rgba(25, 25, 25, 0.9);
             border: 1px solid rgba(197, 160, 89, 0.35);
             border-radius: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             z-index: 200;
         }
         .btn {
             background: transparent;
             color: #e0e0e0;
             border: none;
-            padding: 7px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 12px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 500;
+            letter-spacing: 0.5px;
             transition: all 0.2s ease;
         }
         .btn:hover {
-            background: rgba(197, 160, 89, 0.2);
+            background: rgba(197, 160, 89, 0.25);
             color: #c5a059;
         }
         .divider {
@@ -120,76 +108,28 @@
             font-size: 12px;
             font-weight: 600;
             color: #c5a059;
-            min-width: 55px;
+            min-width: 60px;
             text-align: center;
             letter-spacing: 1px;
-        }
-        #welcome-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 15, 15, 0.92);
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            cursor: pointer;
-            text-align: center;
-            padding: 20px;
-        }
-        #welcome-overlay h1 {
-            font-family: 'Cinzel', serif;
-            color: #c5a059;
-            font-size: 22px;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-        }
-        #welcome-overlay p {
-            color: #aaa;
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .enter-btn {
-            margin-top: 25px;
-            background: #c5a059;
-            color: #121212;
-            border: none;
-            padding: 12px 30px;
-            font-weight: 600;
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: 1.5px;
-            border-radius: 30px;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);
         }
     </style>
 </head>
 <body>
-
-<div id="welcome-overlay">
-    <h1>RADISSON BLU GORAKHPUR</h1>
-    <p>Meetings & Events Dossier</p>
-    <button class="enter-btn">Open Brochure</button>
-</div>
 
 <header>
     <div class="brand-title">RADISSON BLU GORAKHPUR</div>
     <div class="brand-sub">Meetings & Events</div>
 </header>
 
-<div id="book-viewport">
-    <div class="book" id="bookContainer"></div>
+<div id="presentation-viewport">
+    <!-- Slides will be loaded dynamically -->
 </div>
 
 <div class="controls-dock">
-    <button class="btn" id="prevBtn">&#8592; Prev</button>
+    <button class="btn" id="prevBtn">&#8592; Previous</button>
     <span id="pageCounter">1 / 14</span>
     <button class="btn" id="nextBtn">Next &#8594;</button>
     <div class="divider"></div>
-    <button class="btn" id="soundBtn">🔊 Sound: On</button>
     <button class="btn" id="fsBtn">&#x26F6; Fullscreen</button>
 </div>
 
@@ -197,87 +137,49 @@
     document.addEventListener('DOMContentLoaded', function() {
         const totalPages = 14;
         let currentIndex = 0;
-        let soundEnabled = true;
-        let audioCtx = null;
         
-        const bookContainer = document.getElementById('bookContainer');
+        const viewport = document.getElementById('presentation-viewport');
         const pageCounter = document.getElementById('pageCounter');
-        const overlay = document.getElementById('welcome-overlay');
 
-        // Generate pages
+        // Dynamically inject all 14 pages
         for (let i = 1; i <= totalPages; i++) {
-            const sheet = document.createElement('div');
-            sheet.className = 'page-sheet' + (i === 1 ? ' active' : '');
-            sheet.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
-            bookContainer.appendChild(sheet);
+            const slide = document.createElement('div');
+            slide.className = 'slide' + (i === 1 ? ' active' : '');
+            slide.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
+            viewport.appendChild(slide);
         }
 
-        const sheets = document.querySelectorAll('.page-sheet');
+        const slides = document.querySelectorAll('.slide');
 
-        // Crisp mechanical paper-turn click sound (replaces fuzzy white-noise)
-        function playCrispFlipSound() {
-            if (!soundEnabled) return;
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                // Quick frequency drop for a realistic paper snap/thump click
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(280, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
-
-                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.08);
-            } catch(e) {}
+        function updateSlide(index) {
+            slides.forEach((slide, idx) => {
+                slide.classList.toggle('active', idx === index);
+            });
+            pageCounter.textContent = (index + 1) + ' / ' + totalPages;
         }
-
-        function goToPage(index) {
-            sheets[currentIndex].classList.remove('active');
-            currentIndex = index;
-            sheets[currentIndex].classList.add('active');
-            pageCounter.textContent = (currentIndex + 1) + ' / ' + totalPages;
-            playCrispFlipSound();
-        }
-
-        overlay.addEventListener('click', () => {
-            overlay.style.display = 'none';
-            playCrispFlipSound();
-        });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
-            let next = (currentIndex + 1) % totalPages;
-            goToPage(next);
+            currentIndex = (currentIndex + 1) % totalPages;
+            updateSlide(currentIndex);
         });
 
         document.getElementById('prevBtn').addEventListener('click', () => {
-            let prev = (currentIndex - 1 + totalPages) % totalPages;
-            goToPage(prev);
+            currentIndex = (currentIndex - 1 + totalPages) % totalPages;
+            updateSlide(currentIndex);
         });
 
+        // Keyboard arrow navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') {
-                let next = (currentIndex + 1) % totalPages;
-                goToPage(next);
+                currentIndex = (currentIndex + 1) % totalPages;
+                updateSlide(currentIndex);
             } else if (e.key === 'ArrowLeft') {
-                let prev = (currentIndex - 1 + totalPages) % totalPages;
-                goToPage(prev);
+                currentIndex = (currentIndex - 1 + totalPages) % totalPages;
+                updateSlide(currentIndex);
             }
         });
 
-        const soundBtn = document.getElementById('soundBtn');
-        soundBtn.addEventListener('click', () => {
-            soundEnabled = !soundEnabled;
-            soundBtn.textContent = soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
-        });
-
+        // Fullscreen toggle
         document.getElementById('fsBtn').addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
