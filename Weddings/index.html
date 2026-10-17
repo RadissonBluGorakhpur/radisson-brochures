@@ -1,11 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Art of Weddings | Radisson Blu Gorakhpur</title>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js](https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js)"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #222;
             margin: 0;
@@ -15,27 +23,329 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            height: 100dvh;
             font-family: sans-serif;
+            color: #fff;
         }
+
         #flipbook-container {
             width: 95vw;
             height: 90vh;
+            height: 90dvh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
+        #flipbook .page {
+            background: #fff;
+            overflow: hidden;
+        }
+
         #flipbook .page img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             background-color: #fff;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            display: block;
         }
+
         #flipbook .hard {
             background: #fff;
         }
+
+        #toolbar {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 30px;
+            background: rgba(0, 0, 0, 0.75);
+            max-width: 96vw;
+        }
+
+        #toolbar button {
+            border: 1px solid #777;
+            background: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        #toolbar button:hover {
+            background: #555;
+        }
+
+        #page-counter {
+            min-width: 66px;
+            text-align: center;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        #loading-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-align: center;
+            z-index: 10;
+        }
+
+        #error-message {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            color: #fff;
+            background: #7b2020;
+            padding: 10px 14px;
+            border-radius: 6px;
+            z-index: 2000;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            #toolbar {
+                bottom: 10px;
+                gap: 5px;
+                padding: 7px;
+            }
+
+            #toolbar button {
+                padding: 8px 9px;
+                font-size: 12px;
+            }
+
+            #page-counter {
+                min-width: 54px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
-<body>
 
-<div
+<body>
+    <div id="loading-message">Loading wedding brochure…</div>
+    <div id="error-message"></div>
+
+    <div id="flipbook-container">
+        <div id="flipbook"></div>
+    </div>
+
+    <div id="toolbar">
+        <button id="prev-btn" type="button" aria-label="Previous page">❮</button>
+        <span id="page-counter">1 / 22</span>
+        <button id="next-btn" type="button" aria-label="Next page">❯</button>
+        <button id="sound-btn" type="button" aria-label="Toggle page-turn sound">Sound: On</button>
+        <button id="fullscreen-btn" type="button">Fullscreen</button>
+    </div>
+
+    <audio id="page-sound" preload="auto">
+        <source src="paper-slide.wav" type="audio/wav">
+    </audio>
+
+    <script>
+        $(function () {
+            const totalPages = 22;
+            const $flipbook = $("#flipbook");
+            const $container = $("#flipbook-container");
+            const sound = document.getElementById("page-sound");
+
+            let soundEnabled = true;
+            let initialized = false;
+            let previousPage = 1;
+
+            function showError(message) {
+                $("#error-message").text(message).show();
+            }
+
+            // Create all brochure pages.
+            for (let i = 1; i <= totalPages; i++) {
+                const $page = $("<div>").addClass("page");
+
+                if (i === 1 || i === totalPages) {
+                    $page.addClass("hard");
+                }
+
+                const $img = $("<img>", {
+                    src: "Page " + i + ".jpg",
+                    alt: "The Art of Weddings - Page " + i,
+                    draggable: false
+                });
+
+                $img.on("error", function () {
+                    showError("Could not load " + this.src.split("/").pop() +
+                        ". Check the filename and folder.");
+                });
+
+                $page.append($img);
+                $flipbook.append($page);
+            }
+
+            function updateCounter(page) {
+                $("#page-counter").text(page + " / " + totalPages);
+            }
+
+            function playPageSound() {
+                if (!soundEnabled) return;
+
+                try {
+                    sound.currentTime = 0;
+                    const playback = sound.play();
+
+                    if (playback && playback.catch) {
+                        playback.catch(function () {
+                            // Browsers may require a user interaction before audio plays.
+                        });
+                    }
+                } catch (e) {
+                    // Continue browsing if audio is unavailable.
+                }
+            }
+
+            function calculateSize() {
+                const isMobile = window.innerWidth <= 600;
+
+                // Preserve the original book dimensions.
+                let bookWidth = isMobile ? 420 : 840;
+                let bookHeight = 420;
+
+                const maxWidth = $container.width();
+                const maxHeight = $container.height();
+
+                // Fit the original aspect ratio inside the available screen.
+                const scale = Math.min(
+                    maxWidth / bookWidth,
+                    maxHeight / bookHeight,
+                    1
+                );
+
+                return {
+                    width: Math.max(1, Math.floor(bookWidth * scale)),
+                    height: Math.max(1, Math.floor(bookHeight * scale)),
+                    display: isMobile ? "single" : "double"
+                };
+            }
+
+            function initializeFlipbook() {
+                if (initialized) return;
+
+                const size = calculateSize();
+
+                $flipbook.turn({
+                    width: size.width,
+                    height: size.height,
+                    display: size.display,
+                    autoCenter: true,
+                    acceleration: true,
+                    gradients: true,
+                    elevation: 50,
+                    duration: 800,
+                    pages: totalPages,
+                    when: {
+                        turning: function (event, page) {
+                            if (page !== previousPage) {
+                                playPageSound();
+                            }
+                        },
+                        turned: function (event, page) {
+                            previousPage = page;
+                            updateCounter(page);
+                        }
+                    }
+                });
+
+                initialized = true;
+                $("#loading-message").hide();
+                updateCounter(1);
+            }
+
+            // Wait for images to load so the first display is ready.
+            const images = $flipbook.find("img").toArray();
+
+            Promise.all(images.map(function (img) {
+                if (img.complete) return Promise.resolve();
+
+                return new Promise(function (resolve) {
+                    $(img).one("load error", resolve);
+                });
+            })).then(function () {
+                initializeFlipbook();
+            });
+
+            $("#prev-btn").on("click", function () {
+                if (initialized) $flipbook.turn("previous");
+            });
+
+            $("#next-btn").on("click", function () {
+                if (initialized) $flipbook.turn("next");
+            });
+
+            $("#sound-btn").on("click", function () {
+                soundEnabled = !soundEnabled;
+                $(this).text(soundEnabled ? "Sound: On" : "Sound: Off");
+
+                if (!soundEnabled) {
+                    sound.pause();
+                    sound.currentTime = 0;
+                } else {
+                    // Unlock audio on browsers that require user interaction.
+                    sound.play().then(function () {
+                        sound.pause();
+                        sound.currentTime = 0;
+                    }).catch(function () {});
+                }
+            });
+
+            $("#fullscreen-btn").on("click", function () {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen?.().catch(function () {});
+                } else {
+                    document.exitFullscreen?.();
+                }
+            });
+
+            // Recalculate dimensions when screen orientation or size changes.
+            let resizeTimeout;
+
+            $(window).on("resize orientationchange", function () {
+                clearTimeout(resizeTimeout);
+
+                resizeTimeout = setTimeout(function () {
+                    if (!initialized) return;
+
+                    const size = calculateSize();
+
+                    $flipbook.turn("display", size.display);
+                    $flipbook.turn("size", size.width, size.height);
+                }, 150);
+            });
+
+            // Keyboard navigation.
+            $(document).on("keydown", function (event) {
+                if (!initialized) return;
+
+                if (event.key === "ArrowLeft") {
+                    $flipbook.turn("previous");
+                } else if (event.key === "ArrowRight") {
+                    $flipbook.turn("next");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
