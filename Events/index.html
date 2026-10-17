@@ -3,8 +3,10 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/lib/turn.min.js"></script>
+    <!-- FIX 1: Stable jQuery version compatible with turn.js -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- FIX 2: Official Cloudflare CDN for turn.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
     <style>
         body {
             background-color: #222;
@@ -46,42 +48,60 @@
 <script>
     $(window).ready(function() {
         var flipbook = $('#flipbook');
-        
         var totalPages = 14;
 
+        // Auto-generate pages
         for (var i = 1; i <= totalPages; i++) {
             var isHardCover = (i === 1 || i === totalPages) ? 'class="hard"' : '';
             var pageHTML = '<div ' + isHardCover + '><img src="Page ' + i + '.jpg" alt="Page ' + i + '"></div>';
             flipbook.append(pageHTML);
         }
 
+        // Calculate size BEFORE initializing
+        var containerWidth = $('#flipbook-container').width();
+        var containerHeight = $('#flipbook-container').height();
+        var bookWidth = 840; 
+        var bookHeight = 420;
+        var displayMode = 'double';
+        
+        // Mobile detection
+        if (containerWidth < 600) {
+            displayMode = 'single';
+            bookWidth = 420; 
+        }
+
+        var scale = Math.min(containerWidth / bookWidth, containerHeight / bookHeight);
+
+        // FIX 3: Initialize Turn.js with explicit width and height
         flipbook.turn({
+            width: bookWidth * scale,
+            height: bookHeight * scale,
+            display: displayMode,
             acceleration: true,
             gradients: true,
             elevation: 50,
             autoCenter: true
         });
 
-        function resizeFlipbook() {
-            var containerWidth = $('#flipbook-container').width();
-            var containerHeight = $('#flipbook-container').height();
+        // Handle window resizing
+        $(window).on('resize', function() {
+            var cW = $('#flipbook-container').width();
+            var cH = $('#flipbook-container').height();
+            var bW = 840; 
+            var bH = 420;
+            var dMode = 'double';
             
-            var bookWidth = 840; 
-            var bookHeight = 420;
-            
-            if (containerWidth < 600) {
-                flipbook.turn('display', 'single');
-                bookWidth = 420; 
+            if (cW < 600) {
+                dMode = 'single';
+                bW = 420; 
             } else {
-                flipbook.turn('display', 'double');
+                dMode = 'double';
             }
 
-            var scale = Math.min(containerWidth / bookWidth, containerHeight / bookHeight);
-            flipbook.turn('size', bookWidth * scale, bookHeight * scale);
-        }
-
-        $(window).on('resize', resizeFlipbook);
-        resizeFlipbook();
+            var s = Math.min(cW / bW, cH / bH);
+            flipbook.turn('display', dMode);
+            flipbook.turn('size', bW * s, bH * s);
+        });
     });
 </script>
 
