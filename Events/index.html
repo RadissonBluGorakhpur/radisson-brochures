@@ -53,24 +53,28 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            perspective: 1000px;
         }
         .slide {
             display: none;
             width: 100%;
             height: 100%;
-            text-align: center;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
         }
         .slide.active {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            opacity: 1;
         }
         .slide img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             background-color: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            border-radius: 2px;
         }
         .controls-dock {
             margin-bottom: 18px;
@@ -114,9 +118,58 @@
             text-align: center;
             letter-spacing: 1px;
         }
+        /* Welcome Overlay to unlock audio and start experience */
+        #welcome-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 15, 15, 0.92);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            cursor: pointer;
+            text-align: center;
+            padding: 20px;
+        }
+        #welcome-overlay h1 {
+            font-family: 'Cinzel', serif;
+            color: #c5a059;
+            font-size: 22px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        #welcome-overlay p {
+            color: #aaa;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .enter-btn {
+            margin-top: 25px;
+            background: #c5a059;
+            color: #121212;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 1.5px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);
+        }
     </style>
 </head>
 <body>
+
+<!-- Welcome Screen to Unlock Audio -->
+<div id="welcome-overlay">
+    <h1>RADISSON BLU GORAKHPUR</h1>
+    <p>Meetings & Events Digital Dossier</p>
+    <button class="enter-btn">Open Brochure</button>
+</div>
 
 <header>
     <div class="brand-title">RADISSON BLU GORAKHPUR</div>
@@ -132,6 +185,7 @@
     <span id="pageCounter">1 / 14</span>
     <button class="btn" id="nextBtn">Next &#8594;</button>
     <div class="divider"></div>
+    <button class="btn" id="soundBtn">🔊 Sound: On</button>
     <button class="btn" id="fsBtn">&#x26F6; Fullscreen</button>
 </div>
 
@@ -139,12 +193,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const totalPages = 14;
         let currentIndex = 0;
+        let soundEnabled = true;
+        let audioCtx = null;
+        
         const container = document.getElementById('book-container');
         const pageCounter = document.getElementById('pageCounter');
+        const overlay = document.getElementById('welcome-overlay');
 
         // Build slides
         for (let i = 1; i <= totalPages; i++) {
-            const slide = document.div = document.createElement('div');
+            const slide = document.createElement('div');
             slide.className = 'slide' + (i === 1 ? ' active' : '');
             slide.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
             container.appendChild(slide);
@@ -152,12 +210,41 @@
 
         const slides = document.querySelectorAll('.slide');
 
+        function playFlipSound() {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const duration = 0.18;
+                const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let j = 0; j < buffer.length; j++) {
+                    data[j] = (Math.random() * 2 - 1) * Math.sin((j/buffer.length) * Math.PI) * 0.25;
+                }
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 1000;
+                noise.connect(filter);
+                filter.connect(audioCtx.destination);
+                noise.start();
+            } catch(e) {}
+        }
+
         function showSlide(index) {
             slides.forEach((slide, idx) => {
                 slide.classList.toggle('active', idx === index);
             });
             pageCounter.textContent = (index + 1) + ' / ' + totalPages;
+            playFlipSound();
         }
+
+        // Dismiss welcome screen on click
+        overlay.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            playFlipSound(); // Initialize audio context
+        });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
             currentIndex = (currentIndex + 1) % totalPages;
@@ -169,7 +256,6 @@
             showSlide(currentIndex);
         });
 
-        // Keyboard arrows support
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') {
                 currentIndex = (currentIndex + 1) % totalPages;
@@ -178,6 +264,13 @@
                 currentIndex = (currentIndex - 1 + totalPages) % totalPages;
                 showSlide(currentIndex);
             }
+        });
+
+        // Sound Toggle
+        const soundBtn = document.getElementById('soundBtn');
+        soundBtn.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            soundBtn.textContent = soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
         });
 
         // Fullscreen toggle
