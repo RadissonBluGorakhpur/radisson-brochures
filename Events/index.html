@@ -46,35 +46,41 @@
             color: #aaa;
             text-transform: uppercase;
         }
-        #book-container {
+        #book-viewport {
             width: 90vw;
             height: 76vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            perspective: 1000px;
+            perspective: 1500px;
         }
-        .slide {
-            display: none;
+        .book {
+            position: relative;
             width: 100%;
             height: 100%;
+            display: flex;
             justify-content: center;
             align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease-in-out;
         }
-        .slide.active {
+        .page-sheet {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        .page-sheet.active {
             display: flex;
-            opacity: 1;
         }
-        .slide img {
+        .page-sheet img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             background-color: #fff;
             box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-            border-radius: 2px;
         }
         .controls-dock {
             margin-bottom: 18px;
@@ -118,7 +124,6 @@
             text-align: center;
             letter-spacing: 1px;
         }
-        /* Welcome Overlay to unlock audio and start experience */
         #welcome-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -164,10 +169,9 @@
 </head>
 <body>
 
-<!-- Welcome Screen to Unlock Audio -->
 <div id="welcome-overlay">
     <h1>RADISSON BLU GORAKHPUR</h1>
-    <p>Meetings & Events Digital Dossier</p>
+    <p>Meetings & Events Dossier</p>
     <button class="enter-btn">Open Brochure</button>
 </div>
 
@@ -176,8 +180,8 @@
     <div class="brand-sub">Meetings & Events</div>
 </header>
 
-<div id="book-container">
-    <!-- Slides injected dynamically -->
+<div id="book-viewport">
+    <div class="book" id="bookContainer"></div>
 </div>
 
 <div class="controls-dock">
@@ -196,84 +200,84 @@
         let soundEnabled = true;
         let audioCtx = null;
         
-        const container = document.getElementById('book-container');
+        const bookContainer = document.getElementById('bookContainer');
         const pageCounter = document.getElementById('pageCounter');
         const overlay = document.getElementById('welcome-overlay');
 
-        // Build slides
+        // Generate pages
         for (let i = 1; i <= totalPages; i++) {
-            const slide = document.createElement('div');
-            slide.className = 'slide' + (i === 1 ? ' active' : '');
-            slide.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
-            container.appendChild(slide);
+            const sheet = document.createElement('div');
+            sheet.className = 'page-sheet' + (i === 1 ? ' active' : '');
+            sheet.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
+            bookContainer.appendChild(sheet);
         }
 
-        const slides = document.querySelectorAll('.slide');
+        const sheets = document.querySelectorAll('.page-sheet');
 
-        function playFlipSound() {
+        // Crisp mechanical paper-turn click sound (replaces fuzzy white-noise)
+        function playCrispFlipSound() {
             if (!soundEnabled) return;
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-                const duration = 0.18;
-                const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let j = 0; j < buffer.length; j++) {
-                    data[j] = (Math.random() * 2 - 1) * Math.sin((j/buffer.length) * Math.PI) * 0.25;
-                }
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'bandpass';
-                filter.frequency.value = 1000;
-                noise.connect(filter);
-                filter.connect(audioCtx.destination);
-                noise.start();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                // Quick frequency drop for a realistic paper snap/thump click
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+
+                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
             } catch(e) {}
         }
 
-        function showSlide(index) {
-            slides.forEach((slide, idx) => {
-                slide.classList.toggle('active', idx === index);
-            });
-            pageCounter.textContent = (index + 1) + ' / ' + totalPages;
-            playFlipSound();
+        function goToPage(index) {
+            sheets[currentIndex].classList.remove('active');
+            currentIndex = index;
+            sheets[currentIndex].classList.add('active');
+            pageCounter.textContent = (currentIndex + 1) + ' / ' + totalPages;
+            playCrispFlipSound();
         }
 
-        // Dismiss welcome screen on click
         overlay.addEventListener('click', () => {
             overlay.style.display = 'none';
-            playFlipSound(); // Initialize audio context
+            playCrispFlipSound();
         });
 
         document.getElementById('nextBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % totalPages;
-            showSlide(currentIndex);
+            let next = (currentIndex + 1) % totalPages;
+            goToPage(next);
         });
 
         document.getElementById('prevBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + totalPages) % totalPages;
-            showSlide(currentIndex);
+            let prev = (currentIndex - 1 + totalPages) % totalPages;
+            goToPage(prev);
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') {
-                currentIndex = (currentIndex + 1) % totalPages;
-                showSlide(currentIndex);
+                let next = (currentIndex + 1) % totalPages;
+                goToPage(next);
             } else if (e.key === 'ArrowLeft') {
-                currentIndex = (currentIndex - 1 + totalPages) % totalPages;
-                showSlide(currentIndex);
+                let prev = (currentIndex - 1 + totalPages) % totalPages;
+                goToPage(prev);
             }
         });
 
-        // Sound Toggle
         const soundBtn = document.getElementById('soundBtn');
         soundBtn.addEventListener('click', () => {
             soundEnabled = !soundEnabled;
             soundBtn.textContent = soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
         });
 
-        // Fullscreen toggle
         document.getElementById('fsBtn').addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
