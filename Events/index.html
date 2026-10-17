@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111110">
-  <meta name="description" content="Explore Meetings & Events at Radisson Blu Gorakhpur.">
-
+  <meta name="description" content="Meetings & Events at Radisson Blu Gorakhpur">
   <title>Meetings & Events | Radisson Blu Gorakhpur</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,16 +20,13 @@
       --gold-light: #ead8ac;
       --bg: #111110;
       --muted: #aaa59b;
-      --glass: rgba(25, 24, 22, .78);
+      --glass: rgba(25, 24, 22, .82);
       --glass-border: rgba(245, 223, 177, .24);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       width: 100%;
       height: 100%;
       margin: 0;
@@ -41,14 +37,9 @@
       font-family: "Montserrat", sans-serif;
     }
 
-    body {
-      min-height: 0;
-    }
+    body { min-height: 0; }
 
-    button {
-      font: inherit;
-      -webkit-tap-highlight-color: transparent;
-    }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
     button:focus-visible {
       outline: 2px solid var(--gold-light);
@@ -64,11 +55,17 @@
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
       overflow: hidden;
-      background:
-        radial-gradient(ellipse at 50% 40%, #29251f 0%, #171614 52%, #0d0d0d 100%);
+      background: radial-gradient(ellipse at 50% 40%, #29251f 0%, #171614 52%, #0d0d0d 100%);
     }
 
-    /* Header */
+    .app:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      background: var(--bg);
+    }
 
     .topbar {
       position: relative;
@@ -80,12 +77,10 @@
       gap: 12px;
       padding: 10px 22px;
       border-bottom: 1px solid rgba(197, 160, 89, .3);
-      background: rgba(10, 10, 10, .78);
+      background: rgba(10, 10, 10, .82);
     }
 
-    .brand {
-      min-width: 0;
-    }
+    .brand { min-width: 0; }
 
     .brand-name {
       color: var(--gold-light);
@@ -127,14 +122,11 @@
       transition: background .2s, border-color .2s;
     }
 
-    .top-btn:hover,
-    .top-btn.active {
+    .top-btn:hover, .top-btn.active {
       color: var(--gold-light);
       border-color: var(--gold);
       background: rgba(197, 160, 89, .13);
     }
-
-    /* Main viewing area */
 
     .main {
       position: relative;
@@ -178,8 +170,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 4px 78px;
+      padding: 4px 4px 82px;
       overflow: hidden;
+      contain: layout;
     }
 
     #book {
@@ -192,9 +185,7 @@
       will-change: transform;
     }
 
-    #book.zoomed {
-      transform: scale(1.45);
-    }
+    #book.zoomed { transform: scale(1.45); }
 
     #book .page {
       overflow: hidden;
@@ -211,8 +202,6 @@
       pointer-events: none;
     }
 
-    /* Loading and errors */
-
     .loading {
       position: absolute;
       inset: 0;
@@ -223,14 +212,12 @@
       justify-content: center;
       gap: 12px;
       color: var(--muted);
-      background: rgba(17, 17, 16, .88);
+      background: rgba(17, 17, 16, .9);
       text-align: center;
       font-size: 12px;
     }
 
-    .loading.hidden {
-      display: none;
-    }
+    .loading.hidden { display: none; }
 
     .spinner {
       width: 32px;
@@ -241,9 +228,7 @@
       animation: spin .8s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .error {
       display: none;
@@ -261,11 +246,22 @@
       overflow-wrap: anywhere;
     }
 
-    .error.visible {
-      display: block;
+    .error.visible { display: block; }
+
+    .status {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      z-index: 2;
+      max-width: calc(100% - 20px);
+      transform: translateX(-50%);
+      color: rgba(235, 229, 216, .58);
+      text-align: center;
+      font-size: 9px;
+      pointer-events: none;
     }
 
-    /* Floating glassmorphism control dock */
+    /* Floating glass control dock */
 
     .control-dock {
       position: absolute;
@@ -285,10 +281,9 @@
       background: var(--glass);
       -webkit-backdrop-filter: blur(22px) saturate(145%);
       backdrop-filter: blur(22px) saturate(145%);
-      box-shadow:
-        0 8px 35px rgba(0, 0, 0, .42),
-        inset 0 1px 0 rgba(255, 255, 255, .07),
-        0 0 18px rgba(197, 160, 89, .045);
+      box-shadow: 0 8px 35px rgba(0, 0, 0, .42),
+                  inset 0 1px 0 rgba(255, 255, 255, .07),
+                  0 0 18px rgba(197, 160, 89, .045);
     }
 
     .dock-btn {
@@ -306,28 +301,17 @@
       cursor: pointer;
       font-size: 11px;
       white-space: nowrap;
-      transition:
-        color .2s ease,
-        background .2s ease,
-        border-color .2s ease,
-        transform .2s ease;
+      transition: color .2s, background .2s, border-color .2s, transform .2s;
     }
 
-    .dock-btn:hover:not(:disabled),
-    .dock-btn.active {
+    .dock-btn:hover:not(:disabled), .dock-btn.active {
       color: var(--gold-light);
       border-color: rgba(197, 160, 89, .42);
       background: rgba(197, 160, 89, .14);
     }
 
-    .dock-btn:active:not(:disabled) {
-      transform: scale(.95);
-    }
-
-    .dock-btn:disabled {
-      opacity: .3;
-      cursor: not-allowed;
-    }
+    .dock-btn:active:not(:disabled) { transform: scale(.95); }
+    .dock-btn:disabled { opacity: .3; cursor: not-allowed; }
 
     .dock-btn svg {
       width: 17px;
@@ -353,99 +337,29 @@
       white-space: nowrap;
     }
 
-    .page-counter .current {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .page-counter .slash {
-      color: rgba(255, 255, 255, .42);
-    }
+    .page-counter .current { font-size: 16px; font-weight: 600; }
+    .page-counter .slash { color: rgba(255, 255, 255, .42); }
 
     .dock-divider {
       width: 1px;
       height: 25px;
       flex: 0 0 auto;
-      background: rgba(255, 255, 255, .13);
       margin: 0 2px;
+      background: rgba(255, 255, 255, .13);
     }
-
-    .status {
-      position: absolute;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      max-width: calc(100% - 20px);
-      color: rgba(235, 229, 216, .55);
-      text-align: center;
-      font-size: 9px;
-      pointer-events: none;
-    }
-
-    /* Fullscreen */
-
-    .app:fullscreen {
-      width: 100%;
-      height: 100%;
-      background: var(--bg);
-    }
-
-    .app:fullscreen .topbar {
-      padding-top: max(8px, env(safe-area-inset-top));
-    }
-
-    /* Mobile */
 
     @media (max-width: 600px) {
-      .topbar {
-        padding: 7px 9px;
-        gap: 5px;
-      }
-
-      .brand-name {
-        font-size: 12px;
-        letter-spacing: .6px;
-      }
-
-      .brand-subtitle {
-        font-size: 7px;
-        letter-spacing: .7px;
-      }
-
-      .top-actions {
-        gap: 4px;
-      }
-
-      .top-btn {
-        min-height: 31px;
-        padding: 6px 8px;
-        font-size: 10px;
-      }
-
-      .top-btn .btn-label {
-        display: none;
-      }
-
-      .main {
-        padding: 5px 3px 0;
-      }
-
-      .heading {
-        padding-bottom: 2px;
-      }
-
-      .eyebrow {
-        letter-spacing: 1.5px;
-      }
-
-      h1 {
-        font-size: 13px;
-      }
-
-      .stage {
-        padding: 4px 2px 69px;
-      }
+      .topbar { padding: 7px 9px; gap: 5px; }
+      .brand-name { font-size: 12px; letter-spacing: .6px; }
+      .brand-subtitle { font-size: 7px; letter-spacing: .7px; }
+      .top-actions { gap: 4px; }
+      .top-btn { min-height: 31px; padding: 6px 8px; font-size: 10px; }
+      .top-btn .btn-label { display: none; }
+      .main { padding: 5px 3px 0; }
+      .heading { padding-bottom: 2px; }
+      .eyebrow { letter-spacing: 1.5px; }
+      h1 { font-size: 13px; }
+      .stage { padding: 4px 2px 70px; }
 
       .control-dock {
         bottom: max(8px, env(safe-area-inset-bottom));
@@ -454,110 +368,36 @@
         border-radius: 13px;
       }
 
-      .dock-btn {
-        min-width: 34px;
-        min-height: 36px;
-        padding: 7px;
-      }
-
-      .dock-btn svg {
-        width: 16px;
-        height: 16px;
-      }
-
-      .dock-btn .btn-label {
-        display: none;
-      }
-
-      .page-counter {
-        min-width: 52px;
-        gap: 3px;
-        padding: 0 3px;
-        font-size: 11px;
-      }
-
-      .page-counter .current {
-        font-size: 14px;
-      }
-
-      .dock-divider {
-        height: 22px;
-        margin: 0 1px;
-      }
-
-      .status {
-        top: 4px;
-        font-size: 8px;
-      }
+      .dock-btn { min-width: 34px; min-height: 36px; padding: 7px; }
+      .dock-btn svg { width: 16px; height: 16px; }
+      .dock-btn .btn-label { display: none; }
+      .page-counter { min-width: 52px; gap: 3px; padding: 0 3px; font-size: 11px; }
+      .page-counter .current { font-size: 14px; }
+      .dock-divider { height: 22px; margin: 0 1px; }
+      .status { top: 4px; font-size: 8px; }
     }
 
     @media (max-width: 360px) {
-      .brand-name {
-        font-size: 10px;
-      }
-
-      .brand-subtitle {
-        font-size: 6px;
-        letter-spacing: 0;
-      }
-
-      .topbar {
-        padding: 5px;
-      }
-
-      .control-dock {
-        gap: 2px;
-        padding: 5px;
-      }
-
-      .dock-btn {
-        min-width: 31px;
-        min-height: 33px;
-        padding: 5px;
-      }
-
-      .page-counter {
-        min-width: 46px;
-      }
+      .brand-name { font-size: 10px; }
+      .brand-subtitle { font-size: 6px; letter-spacing: 0; }
+      .topbar { padding: 5px; }
+      .control-dock { gap: 2px; padding: 5px; }
+      .dock-btn { min-width: 31px; min-height: 33px; padding: 5px; }
+      .page-counter { min-width: 46px; }
     }
 
     @media (max-height: 520px) and (orientation: landscape) {
-      .topbar {
-        padding: 4px 10px;
-      }
-
-      .brand-subtitle,
-      .heading {
-        display: none;
-      }
-
-      .main {
-        padding-top: 2px;
-      }
-
-      .stage {
-        padding-bottom: 57px;
-      }
-
-      .control-dock {
-        bottom: max(5px, env(safe-area-inset-bottom));
-        padding: 4px;
-      }
-
-      .dock-btn {
-        min-height: 31px;
-        padding: 5px 7px;
-      }
-
-      .status {
-        display: none;
-      }
+      .topbar { padding: 4px 10px; }
+      .brand-subtitle, .heading { display: none; }
+      .main { padding-top: 2px; }
+      .stage { padding-bottom: 58px; }
+      .control-dock { bottom: max(5px, env(safe-area-inset-bottom)); padding: 4px; }
+      .dock-btn { min-height: 31px; padding: 5px 7px; }
+      .status { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
       }
@@ -567,7 +407,6 @@
 
 <body>
   <div class="app" id="app">
-
     <header class="topbar">
       <div class="brand">
         <div class="brand-name">RADISSON BLU</div>
@@ -575,27 +414,13 @@
       </div>
 
       <div class="top-actions">
-        <button
-          class="top-btn"
-          id="sound-btn"
-          type="button"
-          aria-pressed="true"
-          title="Toggle page-turn sound"
-          aria-label="Toggle page-turn sound"
-        >
+        <button class="top-btn" id="sound-btn" type="button" aria-pressed="true" title="Toggle page-turn sound" aria-label="Toggle page-turn sound">
           <span id="sound-icon" aria-hidden="true">♪</span>
           <span class="btn-label" id="sound-label">Sound On</span>
         </button>
 
-        <button
-          class="top-btn"
-          id="fullscreen-btn"
-          type="button"
-          aria-pressed="false"
-          title="Toggle fullscreen"
-          aria-label="Toggle fullscreen"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <button class="top-btn" id="fullscreen-btn" type="button" aria-pressed="false" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
             <path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/>
           </svg>
           <span class="btn-label">Fullscreen</span>
@@ -610,33 +435,25 @@
       </section>
 
       <section class="stage" id="stage" aria-label="Interactive brochure">
-        <div class="status" id="status" aria-live="polite">
-          Turn the pages to explore our brochure.
-        </div>
+        <div class="status" id="status" aria-live="polite">Preparing your brochure…</div>
 
         <div class="loading" id="loading" role="status">
           <div class="spinner"></div>
-          <div id="loading-text">Preparing your brochure…</div>
+          <div id="loading-text">Loading brochure pages…</div>
         </div>
 
         <div class="error" id="error" role="alert"></div>
-
         <div id="book"></div>
       </section>
 
       <nav class="control-dock" aria-label="Brochure controls">
-
         <button class="dock-btn" id="first-btn" type="button" title="First page" aria-label="First page" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 5v14M19 6l-9 6 9 6z"/>
-          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14M19 6l-9 6 9 6z"/></svg>
           <span class="btn-label">First</span>
         </button>
 
         <button class="dock-btn" id="prev-btn" type="button" title="Previous page" aria-label="Previous page" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m15 18-6-6 6-6"/>
-          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
           <span class="btn-label">Prev</span>
         </button>
 
@@ -652,16 +469,12 @@
 
         <button class="dock-btn" id="next-btn" type="button" title="Next page" aria-label="Next page" disabled>
           <span class="btn-label">Next</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m9 18 6-6-6-6"/>
-          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
         </button>
 
         <button class="dock-btn" id="last-btn" type="button" title="Last page" aria-label="Last page" disabled>
           <span class="btn-label">Last</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M19 5v14M5 6l9 6-9 6z"/>
-          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5v14M5 6l9 6-9 6z"/></svg>
         </button>
 
         <div class="dock-divider" aria-hidden="true"></div>
@@ -675,9 +488,7 @@
         </button>
 
         <button class="dock-btn" id="dock-fullscreen-btn" type="button" title="Fullscreen" aria-label="Fullscreen" aria-pressed="false">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/>
-          </svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg>
           <span class="btn-label">Full</span>
         </button>
       </nav>
@@ -688,12 +499,7 @@
     "use strict";
 
     const TOTAL_PAGES = 14;
-
-    // Keep these image files beside this index.html file.
-    const PAGE_IMAGES = Array.from(
-      { length: TOTAL_PAGES },
-      (_, i) => `./Page ${i + 1}.jpg`
-    );
+    const PAGE_IMAGES = Array.from({ length: TOTAL_PAGES }, (_, i) => `./Page ${i + 1}.jpg`);
 
     const app = document.getElementById("app");
     const stage = document.getElementById("stage");
@@ -720,6 +526,7 @@
 
     const zoomBtn = document.getElementById("zoom-btn");
     const zoomLabel = document.getElementById("zoom-label");
+    const zoomIcon = document.getElementById("zoom-icon");
 
     let pageFlip = null;
     let initialized = false;
@@ -729,7 +536,9 @@
     let audioContext = null;
     let imageRatio = 4 / 3;
     let resizeTimer = null;
+    let rebuildVersion = 0;
     let lastLayoutKey = "";
+    let lastSoundTime = 0;
 
     function setStatus(message) {
       statusBox.textContent = message;
@@ -738,12 +547,8 @@
     function loadImage(src) {
       return new Promise((resolve, reject) => {
         const image = new Image();
-
         image.onload = () => resolve(image);
-        image.onerror = () => reject(
-          new Error(`Unable to load image: ${src}`)
-        );
-
+        image.onerror = () => reject(new Error(`Unable to load image: ${src}`));
         image.src = src;
       });
     }
@@ -759,13 +564,9 @@
     }
 
     function updateControls(index) {
-      const i = Math.max(
-        0,
-        Math.min(TOTAL_PAGES - 1, Number(index) || 0)
-      );
+      const i = Math.max(0, Math.min(TOTAL_PAGES - 1, Number(index) || 0));
 
       currentPageText.textContent = String(i + 1);
-
       firstBtn.disabled = !initialized || i === 0;
       prevBtn.disabled = !initialized || i === 0;
       nextBtn.disabled = !initialized || i >= TOTAL_PAGES - 1;
@@ -775,37 +576,21 @@
     function goToPage(index) {
       if (!pageFlip || !initialized) return;
 
-      const target = Math.max(
-        0,
-        Math.min(TOTAL_PAGES - 1, index)
-      );
-
-      if (target !== currentIndex()) {
-        pageFlip.flip(target);
-      }
+      const target = Math.max(0, Math.min(TOTAL_PAGES - 1, index));
+      if (target !== currentIndex()) pageFlip.flip(target);
     }
 
     firstBtn.addEventListener("click", () => goToPage(0));
-
     prevBtn.addEventListener("click", () => {
       if (pageFlip && initialized) pageFlip.flipPrev();
     });
-
     nextBtn.addEventListener("click", () => {
       if (pageFlip && initialized) pageFlip.flipNext();
     });
+    lastBtn.addEventListener("click", () => goToPage(TOTAL_PAGES - 1));
 
-    lastBtn.addEventListener("click", () => {
-      goToPage(TOTAL_PAGES - 1);
-    });
-
-    /* -------------------------------------------------------
-       Layered paper-turn sound
-
-       This creates a short rustle, a low page movement sound,
-       and a soft transient. Audio starts only after interaction
-       because browsers restrict autoplay audio.
-    ------------------------------------------------------- */
+    /* Realistic multi-layer paper-curl sound.
+       It is played on the "flipping" state, not after the page counter changes. */
 
     function initializeAudio() {
       if (!soundEnabled) return;
@@ -814,22 +599,17 @@
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
 
-        if (!audioContext) {
-          audioContext = new AudioCtx();
-        }
+        if (!audioContext) audioContext = new AudioCtx();
 
         if (audioContext.state === "suspended") {
           audioContext.resume().catch(() => {});
         }
-      } catch (_) {
-        // Brochure navigation still works without audio.
-      }
+      } catch (_) {}
     }
 
-    function createNoiseBuffer(duration) {
-      const sampleRate = audioContext.sampleRate;
-      const length = Math.max(1, Math.floor(sampleRate * duration));
-      const buffer = audioContext.createBuffer(1, length, sampleRate);
+    function makeNoiseBuffer(duration) {
+      const length = Math.max(1, Math.floor(audioContext.sampleRate * duration));
+      const buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
       const data = buffer.getChannelData(0);
 
       for (let i = 0; i < length; i++) {
@@ -839,155 +619,117 @@
       return buffer;
     }
 
-    function playPaperRustle() {
+    function playPaperCurlSound() {
       if (!soundEnabled) return;
 
       initializeAudio();
 
       if (!audioContext || audioContext.state !== "running") return;
 
+      const nowMs = performance.now();
+      if (nowMs - lastSoundTime < 180) return;
+      lastSoundTime = nowMs;
+
       try {
         const ctx = audioContext;
         const now = ctx.currentTime;
 
-        // Main soft paper-rustle layer.
-        const rustleDuration = 0.32;
-        const rustle = ctx.createBufferSource();
-        const rustleFilter = ctx.createBiquadFilter();
-        const rustleGain = ctx.createGain();
+        // Soft initial flutter.
+        const flutterDuration = 0.12;
+        const flutter = ctx.createBufferSource();
+        const flutterFilter = ctx.createBiquadFilter();
+        const flutterGain = ctx.createGain();
 
-        rustle.buffer = createNoiseBuffer(rustleDuration);
+        flutter.buffer = makeNoiseBuffer(flutterDuration);
+        flutterFilter.type = "highpass";
+        flutterFilter.frequency.setValueAtTime(850, now);
+        flutterFilter.frequency.exponentialRampToValueAtTime(1500, now + .045);
+        flutterFilter.frequency.exponentialRampToValueAtTime(600, now + flutterDuration);
+        flutterGain.gain.setValueAtTime(.0001, now);
+        flutterGain.gain.exponentialRampToValueAtTime(.07, now + .012);
+        flutterGain.gain.exponentialRampToValueAtTime(.0001, now + flutterDuration);
 
-        rustleFilter.type = "bandpass";
-        rustleFilter.frequency.setValueAtTime(1800, now);
-        rustleFilter.frequency.exponentialRampToValueAtTime(
-          750,
-          now + rustleDuration
-        );
-        rustleFilter.Q.value = 0.65;
+        flutter.connect(flutterFilter);
+        flutterFilter.connect(flutterGain);
+        flutterGain.connect(ctx.destination);
+        flutter.start(now);
+        flutter.stop(now + flutterDuration);
 
-        rustleGain.gain.setValueAtTime(0.0001, now);
-        rustleGain.gain.exponentialRampToValueAtTime(0.11, now + 0.025);
-        rustleGain.gain.exponentialRampToValueAtTime(
-          0.0001,
-          now + rustleDuration
-        );
+        // Main paper sweep: a longer, filtered rustle.
+        const sweepDuration = .36;
+        const sweep = ctx.createBufferSource();
+        const sweepFilter = ctx.createBiquadFilter();
+        const sweepGain = ctx.createGain();
 
-        rustle.connect(rustleFilter);
-        rustleFilter.connect(rustleGain);
-        rustleGain.connect(ctx.destination);
+        sweep.buffer = makeNoiseBuffer(sweepDuration);
+        sweepFilter.type = "bandpass";
+        sweepFilter.Q.value = .7;
+        sweepFilter.frequency.setValueAtTime(2100, now + .012);
+        sweepFilter.frequency.exponentialRampToValueAtTime(720, now + sweepDuration);
 
-        rustle.start(now);
-        rustle.stop(now + rustleDuration);
+        sweepGain.gain.setValueAtTime(.0001, now);
+        sweepGain.gain.exponentialRampToValueAtTime(.12, now + .035);
+        sweepGain.gain.setValueAtTime(.065, now + .12);
+        sweepGain.gain.exponentialRampToValueAtTime(.0001, now + sweepDuration);
 
-        // Lower, softer layer that gives the page movement body.
-        const bodyDuration = 0.19;
+        sweep.connect(sweepFilter);
+        sweepFilter.connect(sweepGain);
+        sweepGain.connect(ctx.destination);
+        sweep.start(now + .008);
+        sweep.stop(now + sweepDuration);
+
+        // Low, gentle page-body movement.
+        const bodyDuration = .23;
         const body = ctx.createBufferSource();
         const bodyFilter = ctx.createBiquadFilter();
         const bodyGain = ctx.createGain();
 
-        body.buffer = createNoiseBuffer(bodyDuration);
-
+        body.buffer = makeNoiseBuffer(bodyDuration);
         bodyFilter.type = "lowpass";
-        bodyFilter.frequency.setValueAtTime(650, now);
-        bodyFilter.frequency.exponentialRampToValueAtTime(
-          230,
-          now + bodyDuration
-        );
+        bodyFilter.frequency.setValueAtTime(500, now);
+        bodyFilter.frequency.exponentialRampToValueAtTime(180, now + bodyDuration);
 
-        bodyGain.gain.setValueAtTime(0.0001, now);
-        bodyGain.gain.exponentialRampToValueAtTime(0.055, now + 0.012);
-        bodyGain.gain.exponentialRampToValueAtTime(
-          0.0001,
-          now + bodyDuration
-        );
+        bodyGain.gain.setValueAtTime(.0001, now);
+        bodyGain.gain.exponentialRampToValueAtTime(.045, now + .014);
+        bodyGain.gain.exponentialRampToValueAtTime(.0001, now + bodyDuration);
 
         body.connect(bodyFilter);
         bodyFilter.connect(bodyGain);
         bodyGain.connect(ctx.destination);
-
         body.start(now);
         body.stop(now + bodyDuration);
-
-        // Small soft impact at the beginning of the page movement.
-        const impactDuration = 0.075;
-        const impact = ctx.createBufferSource();
-        const impactFilter = ctx.createBiquadFilter();
-        const impactGain = ctx.createGain();
-
-        impact.buffer = createNoiseBuffer(impactDuration);
-
-        impactFilter.type = "lowpass";
-        impactFilter.frequency.value = 320;
-
-        impactGain.gain.setValueAtTime(0.0001, now);
-        impactGain.gain.exponentialRampToValueAtTime(0.035, now + 0.006);
-        impactGain.gain.exponentialRampToValueAtTime(
-          0.0001,
-          now + impactDuration
-        );
-
-        impact.connect(impactFilter);
-        impactFilter.connect(impactGain);
-        impactGain.connect(ctx.destination);
-
-        impact.start(now);
-        impact.stop(now + impactDuration);
-      } catch (_) {
-        // Do not interrupt page turning if audio is unavailable.
-      }
+      } catch (_) {}
     }
 
     function updateSoundButton() {
       soundBtn.classList.toggle("active", soundEnabled);
       soundBtn.setAttribute("aria-pressed", String(soundEnabled));
-      soundBtn.setAttribute(
-        "aria-label",
-        soundEnabled ? "Turn page sound off" : "Turn page sound on"
-      );
-
+      soundBtn.setAttribute("aria-label", soundEnabled ? "Turn page sound off" : "Turn page sound on");
       soundIcon.textContent = soundEnabled ? "♪" : "♫";
       soundLabel.textContent = soundEnabled ? "Sound On" : "Sound Off";
     }
 
     soundBtn.addEventListener("click", () => {
       soundEnabled = !soundEnabled;
-
       if (soundEnabled) initializeAudio();
-
       updateSoundButton();
-      setStatus(
-        soundEnabled
-          ? "Page-turn sound enabled."
-          : "Page-turn sound muted."
-      );
+      setStatus(soundEnabled ? "Page-turn sound enabled." : "Page-turn sound muted.");
     });
 
-    // Create/resume audio after a real user gesture.
-    document.addEventListener("pointerdown", initializeAudio, {
-      once: true
-    });
+    // Browsers require a gesture before allowing audio playback.
+    document.addEventListener("pointerdown", initializeAudio, { once: true });
 
-    /* -------------------------------------------------------
-       Zoom
-    ------------------------------------------------------- */
+    /* Zoom */
 
     function updateZoomButton() {
       bookElement.classList.toggle("zoomed", zoomed);
       zoomBtn.classList.toggle("active", zoomed);
       zoomBtn.setAttribute("aria-pressed", String(zoomed));
-
-      zoomBtn.setAttribute(
-        "aria-label",
-        zoomed ? "Return to normal size" : "Zoom in"
-      );
-
+      zoomBtn.setAttribute("aria-label", zoomed ? "Return to normal size" : "Zoom in");
       zoomBtn.title = zoomed ? "Return to normal size" : "Zoom in";
       zoomLabel.textContent = zoomed ? "Reset" : "Zoom";
 
-      const icon = document.getElementById("zoom-icon");
-
-      icon.innerHTML = zoomed
+      zoomIcon.innerHTML = zoomed
         ? '<circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5M7.5 10.8h6.6"/>'
         : '<circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5M10.8 7.5v6.6M7.5 10.8h6.6"/>';
     }
@@ -995,54 +737,33 @@
     zoomBtn.addEventListener("click", () => {
       zoomed = !zoomed;
       updateZoomButton();
-
-      setStatus(
-        zoomed
-          ? "Zoom set to 145%. Select Reset to return to normal size."
-          : "Normal brochure view."
-      );
+      setStatus(zoomed ? "Zoom set to 145%. Select Reset to return to normal size." : "Normal brochure view.");
     });
 
-    /* -------------------------------------------------------
-       Responsive PageFlip sizing
-
-       Uses the source image ratio where available. The 600x450
-       landscape ratio (4:3) is the fallback, so images are not
-       stretched to a different shape by the sizing calculations.
-    ------------------------------------------------------- */
+    /* Responsive page dimensions */
 
     function calculateLayout() {
       const rect = stage.getBoundingClientRect();
-
       const availableWidth = Math.max(180, rect.width - 12);
-      const availableHeight = Math.max(160, rect.height - 86);
+      const availableHeight = Math.max(120, rect.height - 86);
 
       const mobile = window.matchMedia("(max-width: 600px)").matches;
       const landscape = window.matchMedia("(orientation: landscape)").matches;
-
-      const useSpread =
-        !mobile &&
-        landscape &&
-        availableWidth / availableHeight >= 1.55;
-
+      const useSpread = !mobile && landscape && availableWidth / availableHeight >= 1.55;
       const visiblePages = useSpread ? 2 : 1;
 
       const pageWidthLimit = availableWidth / visiblePages;
-      const pageHeight = Math.min(
-        availableHeight,
-        pageWidthLimit / imageRatio
-      );
-
-      const safePageHeight = Math.max(100, pageHeight);
-      const pageWidth = safePageHeight * imageRatio;
+      const pageHeight = Math.min(availableHeight, pageWidthLimit / imageRatio);
+      const safeHeight = Math.max(100, pageHeight);
+      const pageWidth = safeHeight * imageRatio;
 
       return {
         pageWidth: Math.max(100, Math.floor(pageWidth)),
-        pageHeight: Math.max(100, Math.floor(safePageHeight)),
+        pageHeight: Math.max(100, Math.floor(safeHeight)),
         visiblePages,
         key: [
           Math.floor(pageWidth),
-          Math.floor(safePageHeight),
+          Math.floor(safeHeight),
           visiblePages
         ].join("-")
       };
@@ -1066,36 +787,28 @@
       });
     }
 
-    function createFlipbook(layout, startAt = 0) {
+    function createFlipbook(layout, startAt = 0, version = rebuildVersion) {
       if (!window.St || typeof window.St.PageFlip !== "function") {
-        throw new Error(
-          "The page-flip library could not load. Check your internet connection."
-        );
+        throw new Error("The page-flip library could not load. Check your internet connection.");
       }
 
-      bookElement.style.width =
-        `${layout.pageWidth * layout.visiblePages}px`;
-
+      bookElement.style.width = `${layout.pageWidth * layout.visiblePages}px`;
       bookElement.style.height = `${layout.pageHeight}px`;
 
       const flip = new window.St.PageFlip(bookElement, {
         width: layout.pageWidth,
         height: layout.pageHeight,
-
         size: "fixed",
         minWidth: layout.pageWidth,
         maxWidth: layout.pageWidth,
         minHeight: layout.pageHeight,
         maxHeight: layout.pageHeight,
-
         startPage: Math.max(0, Math.min(TOTAL_PAGES - 1, startAt)),
         showCover: true,
         usePortrait: layout.visiblePages === 1,
-
         drawShadow: true,
-        maxShadowOpacity: 0.38,
+        maxShadowOpacity: .38,
         flippingTime: 850,
-
         autoSize: false,
         mobileScrollSupport: false,
         showPageCorners: true,
@@ -1105,36 +818,40 @@
       });
 
       flip.on("init", () => {
+        // Ignore late init events from a destroyed instance.
+        if (version !== rebuildVersion || pageFlip !== flip) return;
+
         initialized = true;
         rebuilding = false;
-
         loading.classList.add("hidden");
         errorBox.classList.remove("visible");
-
         updateControls(currentIndex());
         setStatus("Turn the pages to explore our brochure.");
       });
 
-      flip.on("flip", event => {
-        const index =
-          event && typeof event.data === "number"
-            ? event.data
-            : currentIndex();
-
-        updateControls(index);
-        playPaperRustle();
-      });
-
+      // Sound begins as soon as the page starts moving.
       flip.on("changeState", event => {
+        if (version !== rebuildVersion || pageFlip !== flip) return;
+
         if (event && event.data === "flipping") {
+          playPaperCurlSound();
           setStatus("Turning page…");
         } else {
           setStatus("Explore the brochure.");
         }
       });
 
-      flip.loadFromHTML(bookElement.querySelectorAll(".page"));
+      flip.on("flip", event => {
+        if (version !== rebuildVersion || pageFlip !== flip) return;
 
+        const index = event && typeof event.data === "number"
+          ? event.data
+          : currentIndex();
+
+        updateControls(index);
+      });
+
+      flip.loadFromHTML(bookElement.querySelectorAll(".page"));
       return flip;
     }
 
@@ -1142,99 +859,122 @@
       loading.classList.remove("hidden");
       errorBox.classList.remove("visible");
       loadingText.textContent = "Loading brochure pages…";
-
       setStatus("Preparing your brochure…");
 
       try {
-        const images = await Promise.all(
-          PAGE_IMAGES.map(loadImage)
-        );
-
+        const images = await Promise.all(PAGE_IMAGES.map(loadImage));
         const firstImage = images[0];
 
-        if (firstImage.naturalWidth && firstImage.naturalHeight) {
-          imageRatio =
-            firstImage.naturalWidth / firstImage.naturalHeight;
-        } else {
-          imageRatio = 4 / 3;
-        }
+        imageRatio = firstImage.naturalWidth && firstImage.naturalHeight
+          ? firstImage.naturalWidth / firstImage.naturalHeight
+          : 4 / 3;
 
-        if (!Number.isFinite(imageRatio) || imageRatio <= 0) {
-          imageRatio = 4 / 3;
-        }
+        if (!Number.isFinite(imageRatio) || imageRatio <= 0) imageRatio = 4 / 3;
 
         buildBookPages();
 
         const layout = calculateLayout();
         lastLayoutKey = layout.key;
 
-        pageFlip = createFlipbook(layout, 0);
+        pageFlip = createFlipbook(layout, 0, rebuildVersion);
       } catch (error) {
         console.error(error);
-
         loading.classList.add("hidden");
         errorBox.classList.add("visible");
-
         errorBox.textContent =
-          "The brochure could not be loaded. Check that Page 1.jpg through Page 14.jpg are in the same folder as index.html, and that the filenames match exactly. The PageFlip library also requires an internet connection. Details: " +
+          "The brochure could not be loaded. Check that Page 1.jpg through Page 14.jpg are in the same folder as index.html, with matching filenames. The PageFlip library also requires an internet connection. Details: " +
           error.message;
-
         setStatus("Unable to load the brochure.");
       }
     }
 
-    /* -------------------------------------------------------
-       Rebuild for screen size and orientation changes
-    ------------------------------------------------------- */
+    /* Fullscreen-safe layout recovery.
+       Wait for the browser's viewport to settle, then rebuild only if
+       dimensions really changed. Preserve the current page number. */
 
-    function handleResize() {
-      if (!initialized || rebuilding || !pageFlip) return;
-
+    function scheduleLayoutCheck(delay = 300) {
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(() => {
-        if (!initialized || rebuilding || !pageFlip) return;
+        if (!pageFlip || !initialized || rebuilding) return;
 
         const layout = calculateLayout();
 
-        if (layout.key === lastLayoutKey) return;
-
-        const savedPage = currentIndex();
-
-        try {
-          rebuilding = true;
-          initialized = false;
-
-          loading.classList.remove("hidden");
-          loadingText.textContent = "Adjusting to your screen…";
-
-          const oldFlip = pageFlip;
-          pageFlip = null;
-
-          if (typeof oldFlip.destroy === "function") {
-            oldFlip.destroy();
-          }
-
-          buildBookPages();
-
-          lastLayoutKey = layout.key;
-          pageFlip = createFlipbook(layout, savedPage);
-        } catch (error) {
-          console.error(error);
-
-          rebuilding = false;
+        if (layout.key === lastLayoutKey) {
+          // No rebuild needed: clear any stale loading overlay.
           loading.classList.add("hidden");
-          setStatus("Please refresh the page to readjust the brochure.");
+          return;
         }
-      }, 250);
+
+        rebuildBook(layout, currentIndex());
+      }, delay);
     }
 
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
+    function rebuildBook(layout, savedPage) {
+      if (rebuilding) return;
 
-    /* -------------------------------------------------------
-       Fullscreen: header and dock buttons share one function
-    ------------------------------------------------------- */
+      rebuilding = true;
+      initialized = false;
+      rebuildVersion++;
+
+      const thisVersion = rebuildVersion;
+      const oldFlip = pageFlip;
+      pageFlip = null;
+
+      loading.classList.remove("hidden");
+      loadingText.textContent = "Adjusting brochure to your screen…";
+      updateControls(savedPage);
+
+      try {
+        if (oldFlip && typeof oldFlip.destroy === "function") {
+          oldFlip.destroy();
+        }
+
+        // Wait one frame so the destroyed PageFlip wrapper is removed
+        // before creating the new instance.
+        requestAnimationFrame(() => {
+          if (thisVersion !== rebuildVersion) return;
+
+          try {
+            bookElement.innerHTML = "";
+            bookElement.classList.toggle("zoomed", zoomed);
+
+            buildBookPages();
+            lastLayoutKey = layout.key;
+
+            pageFlip = createFlipbook(layout, savedPage, thisVersion);
+          } catch (error) {
+            console.error(error);
+            rebuilding = false;
+            initialized = false;
+            loading.classList.add("hidden");
+            errorBox.classList.add("visible");
+            errorBox.textContent =
+              "The brochure could not be resized. Please exit fullscreen and try again. Details: " +
+              error.message;
+            setStatus("Unable to resize the brochure.");
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        rebuilding = false;
+        loading.classList.add("hidden");
+        setStatus("Unable to resize the brochure. Please refresh the page.");
+      }
+    }
+
+    window.addEventListener("resize", () => scheduleLayoutCheck(350));
+    window.addEventListener("orientationchange", () => scheduleLayoutCheck(450));
+
+    // Observe the actual viewing area, not just the window.
+    if ("ResizeObserver" in window) {
+      const stageObserver = new ResizeObserver(() => {
+        if (initialized && !rebuilding) scheduleLayoutCheck(350);
+      });
+      stageObserver.observe(stage);
+    }
+
+    /* Fullscreen controls */
 
     async function toggleFullscreen() {
       try {
@@ -1261,16 +1001,14 @@
 
       fullscreenBtn.classList.toggle("active", active);
       dockFullscreenBtn.classList.toggle("active", active);
-
       fullscreenBtn.setAttribute("aria-pressed", String(active));
       dockFullscreenBtn.setAttribute("aria-pressed", String(active));
 
-      handleResize();
+      // The fullscreenchange event can fire before dimensions settle.
+      scheduleLayoutCheck(500);
     });
 
-    /* -------------------------------------------------------
-       Keyboard navigation
-    ------------------------------------------------------- */
+    /* Keyboard navigation */
 
     document.addEventListener("keydown", event => {
       const target = event.target;
@@ -1281,9 +1019,7 @@
         event.metaKey ||
         (target && target.closest &&
           target.closest("button, input, textarea, select"))
-      ) {
-        return;
-      }
+      ) return;
 
       if (!pageFlip || !initialized) return;
 
@@ -1330,7 +1066,6 @@
     updateSoundButton();
     updateZoomButton();
     updateControls(0);
-
     initialize();
   </script>
 </body>
