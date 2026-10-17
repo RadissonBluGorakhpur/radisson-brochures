@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/lib/turn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
     <style>
         body {
             background-color: #222;
@@ -23,7 +23,6 @@
             justify-content: center;
             align-items: center;
         }
-        /* The Magic Fix: Forces images to perfectly fit the page */
         .page-bg {
             background-color: #fff;
             background-size: contain;
@@ -47,26 +46,28 @@
         var flipbook = $('#flipbook');
         var totalPages = 14;
 
-        // Injects background images instead of raw <img> tags
+        // Injects background images perfectly formatted for CSS
         for (var i = 1; i <= totalPages; i++) {
             var isHardCover = (i === 1 || i === totalPages) ? ' hard' : '';
-            var pageHTML = '<div class="page-bg' + isHardCover + '" style="background-image: url(\'Page ' + i + '.jpg\');"></div>';
+            // Added %20 to properly encode the space in "Page 1.jpg"
+            var pageHTML = '<div class="page-bg' + isHardCover + '" style="background-image: url(\'Page%20' + i + '.jpg\');"></div>';
             flipbook.append(pageHTML);
         }
 
         var containerWidth = $('#flipbook-container').width();
         var containerHeight = $('#flipbook-container').height();
-        var bookWidth = 800; // 2:1 Ratio for square brochures
+        var bookWidth = 800; 
         var bookHeight = 400;
         var displayMode = 'double';
         
         if (containerWidth < 600) {
             displayMode = 'single';
-            bookWidth = 400; // 1:1 Ratio for mobile
+            bookWidth = 400; 
         }
 
         var scale = Math.min(containerWidth / bookWidth, containerHeight / bookHeight);
 
+        // Initialize the flipbook
         flipbook.turn({
             width: bookWidth * scale,
             height: bookHeight * scale,
@@ -77,6 +78,7 @@
             autoCenter: true
         });
 
+        // Ensure it scales when the screen resizes or phone rotates
         $(window).on('resize', function() {
             var cW = $('#flipbook-container').width();
             var cH = $('#flipbook-container').height();
