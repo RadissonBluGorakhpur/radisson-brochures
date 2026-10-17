@@ -3,10 +3,8 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
-    <!-- FIX 1: Stable jQuery version compatible with turn.js -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <!-- FIX 2: Official Cloudflare CDN for turn.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/lib/turn.min.js"></script>
     <style>
         body {
             background-color: #222;
@@ -17,7 +15,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: sans-serif;
         }
         #flipbook-container {
             width: 95vw;
@@ -26,15 +23,15 @@
             justify-content: center;
             align-items: center;
         }
-        #flipbook .page img {
+        /* The Magic Fix: Forces images to perfectly fit the page */
+        .page-bg {
+            background-color: #fff;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            background-color: #fff;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
-        }
-        #flipbook .hard {
-            background: #fff;
         }
     </style>
 </head>
@@ -50,29 +47,26 @@
         var flipbook = $('#flipbook');
         var totalPages = 14;
 
-        // Auto-generate pages
+        // Injects background images instead of raw <img> tags
         for (var i = 1; i <= totalPages; i++) {
-            var isHardCover = (i === 1 || i === totalPages) ? 'class="hard"' : '';
-            var pageHTML = '<div ' + isHardCover + '><img src="Page ' + i + '.jpg" alt="Page ' + i + '"></div>';
+            var isHardCover = (i === 1 || i === totalPages) ? ' hard' : '';
+            var pageHTML = '<div class="page-bg' + isHardCover + '" style="background-image: url(\'Page ' + i + '.jpg\');"></div>';
             flipbook.append(pageHTML);
         }
 
-        // Calculate size BEFORE initializing
         var containerWidth = $('#flipbook-container').width();
         var containerHeight = $('#flipbook-container').height();
-        var bookWidth = 840; 
-        var bookHeight = 420;
+        var bookWidth = 800; // 2:1 Ratio for square brochures
+        var bookHeight = 400;
         var displayMode = 'double';
         
-        // Mobile detection
         if (containerWidth < 600) {
             displayMode = 'single';
-            bookWidth = 420; 
+            bookWidth = 400; // 1:1 Ratio for mobile
         }
 
         var scale = Math.min(containerWidth / bookWidth, containerHeight / bookHeight);
 
-        // FIX 3: Initialize Turn.js with explicit width and height
         flipbook.turn({
             width: bookWidth * scale,
             height: bookHeight * scale,
@@ -83,17 +77,16 @@
             autoCenter: true
         });
 
-        // Handle window resizing
         $(window).on('resize', function() {
             var cW = $('#flipbook-container').width();
             var cH = $('#flipbook-container').height();
-            var bW = 840; 
-            var bH = 420;
+            var bW = 800; 
+            var bH = 400;
             var dMode = 'double';
             
             if (cW < 600) {
                 dMode = 'single';
-                bW = 420; 
+                bW = 400; 
             } else {
                 dMode = 'double';
             }
