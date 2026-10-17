@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meetings & Events | Radisson Blu Gorakhpur</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js](https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js)"></script>
+    <style>
+        body {
+            background-color: #222;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+        #flipbook-container {
+            width: 95vw;
+            height: 90vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #flipbook .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #fff;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+        #flipbook .hard {
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div id="flipbook-container">
+    <div id="flipbook">
+    </div>
+</div>
+
+<script>
+    $(window).ready(function() {
+        var flipbook = $('#flipbook');
+        
+        var totalPages = 14;
+
+        for (var i = 1; i <= totalPages; i++) {
+            var isHardCover = (i === 1 || i === totalPages) ? 'class="hard"' : '';
+            var pageHTML = '<div ' + isHardCover + '><img src="Page ' + i + '.jpg" alt="Page ' + i + '"></div>';
+            flipbook.append(pageHTML);
+        }
+
+        flipbook.turn({
+            acceleration: true,
+            gradients: true,
+            elevation: 50,
+            autoCenter: true
+        });
+
+        function resizeFlipbook() {
+            var containerWidth = $('#flipbook-container').width();
+            var containerHeight = $('#flipbook-container').height();
+            
+            var bookWidth = 840; 
+            var bookHeight = 420;
+            
+            if (containerWidth < 600) {
+                flipbook.turn('display', 'single');
+                bookWidth = 420; 
+            } else {
+                flipbook.turn('display', 'double');
+            }
+
+            var scale = Math.min(containerWidth / bookWidth, containerHeight / bookHeight);
+            flipbook.turn('size', bookWidth * scale, bookHeight * scale);
+        }
+
+        $(window).on('resize', resizeFlipbook);
+        resizeFlipbook();
+    });
+</script>
+
+</body>
+</html>
