@@ -3,41 +3,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111111">
-  <meta name="description" content="Explore the Meetings & Events brochure of Radisson Blu Gorakhpur. Discover our venues, event spaces and hospitality.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111110">
 
   <title>Meetings & Events | Radisson Blu Gorakhpur</title>
+  <meta name="description" content="Explore Meetings & Events at Radisson Blu Gorakhpur.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- PageFlip library -->
+  <!-- PageFlip CDN: no separate JS file needs to be uploaded -->
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
 
   <style>
     :root {
-      --gold: #c9a96e;
-      --gold-light: #ead6a7;
-      --black: #101010;
-      --panel: #191919;
-      --muted: #aaa49a;
-      --white: #f7f3ec;
+      --gold: #c8a96b;
+      --gold-light: #ead8ac;
+      --bg: #111110;
+      --panel: #1c1b19;
+      --muted: #aaa59b;
+      --line: rgba(200, 169, 107, .35);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
+      width: 100%;
+      height: 100%;
       margin: 0;
-      min-height: 100vh;
-      overflow-x: hidden;
-      background:
-        radial-gradient(ellipse at 50% 40%, #29251e 0%, #151515 50%, #080808 100%);
-      color: var(--white);
-      font-family: 'Montserrat', sans-serif;
+      padding: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: #f7f4ed;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+      min-height: 0;
     }
 
     button {
@@ -46,159 +52,135 @@
 
     button:focus-visible {
       outline: 2px solid var(--gold-light);
-      outline-offset: 4px;
+      outline-offset: 3px;
     }
 
-    .welcome {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
+    .app {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
       display: grid;
-      place-items: center;
-      padding: 24px;
-      background: #0c0c0c;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 40%, #29251f 0%, #171614 50%, #0d0d0d 100%);
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 5;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(10, 10, 10, .94);
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand-name {
+      color: var(--gold-light);
+      font-family: "Cinzel", serif;
+      font-size: clamp(12px, 1.7vw, 21px);
+      letter-spacing: 1.3px;
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: clamp(7px, .8vw, 10px);
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    .top-actions {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn {
+      min-height: 34px;
+      padding: 7px 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: #f7f4ed;
+      background: var(--panel);
+      cursor: pointer;
+      font-size: 11px;
+      white-space: nowrap;
+      transition: background .2s, border-color .2s;
+    }
+
+    .btn:hover:not(:disabled),
+    .btn.active {
+      color: var(--gold-light);
+      border-color: var(--gold);
+      background: #302a20;
+    }
+
+    .btn:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .main {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: 5px;
+      padding: 9px 12px 8px;
+      overflow: hidden;
+    }
+
+    .heading {
       text-align: center;
-      transition: opacity .7s ease, visibility .7s ease;
-    }
-
-    .welcome.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .welcome-inner {
-      max-width: 620px;
+      min-width: 0;
     }
 
     .eyebrow {
       color: var(--gold);
-      letter-spacing: 5px;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .welcome h1 {
-      margin: 25px 0 12px;
-      font-family: 'Cinzel', serif;
-      font-size: clamp(30px, 5vw, 52px);
-      font-weight: 500;
-      line-height: 1.25;
-    }
-
-    .welcome p {
-      color: #c4bfb5;
-      font-size: 13px;
-      letter-spacing: 1px;
-      line-height: 1.8;
-    }
-
-    .gold-line {
-      width: 75px;
-      height: 1px;
-      margin: 25px auto;
-      background: var(--gold);
-    }
-
-    .primary-button {
-      min-height: 48px;
-      padding: 14px 27px;
-      border: 1px solid var(--gold);
-      background: var(--gold);
-      color: #17130c;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      transition: .25s ease;
-    }
-
-    .primary-button:hover {
-      background: var(--gold-light);
-      border-color: var(--gold-light);
-    }
-
-    .app {
-      display: flex;
-      min-height: 100vh;
-      flex-direction: column;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 20px 4vw;
-      border-bottom: 1px solid rgba(201,169,110,.2);
-      background: rgba(8,8,8,.72);
-    }
-
-    .brand {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(13px, 1.6vw, 19px);
-      letter-spacing: 2px;
-    }
-
-    .brand span {
-      display: block;
-      margin-top: 6px;
-      color: var(--gold);
-      font-family: 'Montserrat', sans-serif;
-      font-size: 9px;
+      font-size: clamp(8px, .85vw, 10px);
       letter-spacing: 3px;
-    }
-
-    .header-label {
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-align: right;
       text-transform: uppercase;
     }
 
-    main {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px 16px;
-    }
-
-    .intro {
-      margin-bottom: 22px;
-      text-align: center;
-    }
-
-    .intro h2 {
-      margin: 0 0 8px;
-      font-family: 'Cinzel', serif;
-      font-size: clamp(19px, 2.5vw, 28px);
+    h1 {
+      margin: 4px 0 0;
+      font-family: "Cinzel", serif;
+      font-size: clamp(13px, 1.8vw, 22px);
       font-weight: 500;
-      letter-spacing: 1px;
+      letter-spacing: .6px;
     }
 
-    .intro p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
-
-    .book-area {
+    .stage {
       position: relative;
-      display: flex;
+      min-width: 0;
+      min-height: 0;
       width: 100%;
+      height: 100%;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 8px;
+      overflow: hidden;
     }
 
     #book {
-      margin: 0 auto;
+      position: relative;
+      flex: 0 0 auto;
+      margin: auto;
     }
 
     #book .page {
@@ -211,170 +193,202 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background: #f5f1e9;
       user-select: none;
       -webkit-user-drag: none;
+      pointer-events: none;
     }
 
-    .status {
-      min-height: 18px;
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-align: center;
-    }
-
-    .status.error {
-      color: #f0a19a;
-      letter-spacing: 0;
-    }
-
-    .toolbar {
+    .loading {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
       display: flex;
-      width: min(100%, 680px);
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 12px;
-      margin-top: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      background: rgba(17, 17, 16, .84);
     }
 
-    .tool-button {
-      display: inline-flex;
-      min-width: 44px;
-      min-height: 42px;
+    .loading.hidden {
+      display: none;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(200, 169, 107, .2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      display: none;
+      max-width: 650px;
+      margin: auto;
+      padding: 18px;
+      border: 1px solid #875b4e;
+      border-radius: 5px;
+      color: #f0d1c7;
+      background: #261916;
+      font-size: 12px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    .controls {
+      min-width: 0;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 15px;
-      border: 1px solid #51452f;
-      background: rgba(22,22,22,.92);
-      color: var(--white);
-      cursor: pointer;
-      transition: .2s ease;
+      flex-wrap: nowrap;
+      gap: 7px;
+      padding: 2px 0;
     }
 
-    .tool-button:hover:not(:disabled) {
-      border-color: var(--gold);
-      color: var(--gold-light);
-    }
-
-    .tool-button:disabled {
-      opacity: .35;
-      cursor: not-allowed;
-    }
-
-    .page-counter {
-      min-width: 95px;
+    .page-count {
+      min-width: 58px;
+      text-align: center;
       color: var(--gold-light);
       font-size: 11px;
-      letter-spacing: 1.5px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .page-count .separator {
+      color: #777;
+      padding: 0 4px;
+    }
+
+    .status {
+      min-height: 13px;
+      color: #aaa59b;
       text-align: center;
-    }
-
-    .thumbnails {
-      display: flex;
-      width: min(100%, 900px);
-      gap: 9px;
-      overflow-x: auto;
-      padding: 20px 4px 12px;
-      scrollbar-color: #6d5937 #171717;
-      scrollbar-width: thin;
-    }
-
-    .thumb {
-      position: relative;
-      flex: 0 0 54px;
-      height: 70px;
-      overflow: hidden;
-      padding: 0;
-      border: 1px solid #45403a;
-      background: #222;
-      cursor: pointer;
-      opacity: .65;
-      transition: .2s ease;
-    }
-
-    .thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .thumb.active {
-      border: 2px solid var(--gold);
-      opacity: 1;
-    }
-
-    .thumb:hover {
-      opacity: 1;
-    }
-
-    footer {
-      padding: 15px;
-      border-top: 1px solid rgba(201,169,110,.16);
-      color: #817b70;
       font-size: 9px;
-      letter-spacing: 2px;
-      text-align: center;
-      text-transform: uppercase;
+      line-height: 1.4;
     }
 
-    .noscript {
-      padding: 20px;
-      color: #fff;
-      text-align: center;
+    /* Landscape phones and short laptop displays */
+    @media (max-height: 600px) {
+      .topbar {
+        padding: 4px 10px;
+      }
+
+      .brand-subtitle,
+      .heading {
+        display: none;
+      }
+
+      .main {
+        padding: 3px 6px;
+        gap: 2px;
+      }
+
+      .controls {
+        gap: 5px;
+      }
+
+      .status {
+        min-height: 10px;
+      }
     }
 
+    /* Mobile screens */
     @media (max-width: 600px) {
-      header {
-        padding: 16px;
+      .topbar {
+        padding: 6px 8px;
+        gap: 5px;
       }
 
-      .header-label {
-        max-width: 115px;
-        font-size: 8px;
-        line-height: 1.6;
-      }
-
-      main {
-        padding: 24px 6px 12px;
-      }
-
-      .intro {
-        margin-bottom: 16px;
-      }
-
-      .intro p {
-        font-size: 9px;
-        line-height: 1.7;
-      }
-
-      .toolbar {
-        gap: 7px;
-        margin-top: 14px;
-      }
-
-      .tool-button {
-        min-width: 40px;
-        min-height: 40px;
-        padding: 8px 10px;
+      .brand-name {
         font-size: 12px;
+        letter-spacing: .5px;
       }
 
-      .page-counter {
-        min-width: 80px;
+      .brand-subtitle {
+        font-size: 7px;
+        letter-spacing: .5px;
+      }
+
+      .top-actions {
+        gap: 4px;
+      }
+
+      .btn {
+        min-height: 31px;
+        padding: 6px 8px;
         font-size: 10px;
       }
 
-      .thumb {
-        flex-basis: 46px;
-        height: 60px;
+      .top-actions .btn-label,
+      .controls .btn-label {
+        display: none;
+      }
+
+      .main {
+        padding: 5px 3px 3px;
+        gap: 3px;
+      }
+
+      .eyebrow {
+        letter-spacing: 1.5px;
+      }
+
+      h1 {
+        font-size: 13px;
+      }
+
+      .controls {
+        gap: 4px;
+      }
+
+      .controls .btn {
+        min-width: 32px;
+        padding: 6px;
+      }
+
+      .page-count {
+        min-width: 48px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .brand-name {
+        font-size: 10px;
+      }
+
+      .brand-subtitle {
+        letter-spacing: 0;
+      }
+
+      .topbar {
+        padding: 5px;
+      }
+
+      .btn {
+        padding: 5px 6px;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
         transition-duration: .01ms !important;
       }
     }
@@ -382,313 +396,617 @@
 </head>
 
 <body>
-  <section class="welcome" id="welcome">
-    <div class="welcome-inner">
-      <div class="eyebrow">Radisson Blu Gorakhpur</div>
-      <h1>Meetings &amp; Events</h1>
-      <div class="gold-line"></div>
-      <p>
-        Exceptional venues. Thoughtful details.<br>
-        Memorable occasions.
-      </p>
-      <button class="primary-button" id="openBook">
-        Explore the Brochure &nbsp; →
-      </button>
-    </div>
-  </section>
-
   <div class="app">
-    <header>
+
+    <header class="topbar">
       <div class="brand">
-        RADISSON BLU
-        <span>GORAKHPUR</span>
+        <div class="brand-name">RADISSON BLU</div>
+        <div class="brand-subtitle">Gorakhpur · Meetings & Events</div>
       </div>
-      <div class="header-label">
-        Meetings &amp; Events<br>
-        Digital Brochure
+
+      <div class="top-actions">
+        <button
+          class="btn"
+          id="sound-btn"
+          type="button"
+          aria-pressed="true"
+          title="Toggle page-turn sound"
+        >
+          <span id="sound-icon" aria-hidden="true">♪</span>
+          <span class="btn-label" id="sound-label">Sound On</span>
+        </button>
+
+        <button
+          class="btn"
+          id="fullscreen-btn"
+          type="button"
+          aria-pressed="false"
+          title="Toggle fullscreen"
+        >
+          <span aria-hidden="true">⛶</span>
+          <span class="btn-label">Fullscreen</span>
+        </button>
       </div>
     </header>
 
-    <main>
-      <div class="intro">
-        <h2>Make Every Occasion Exceptional</h2>
-        <p>Turn the page to explore our venues and experiences</p>
-      </div>
+    <main class="main">
+      <section class="heading">
+        <div class="eyebrow">Discover Extraordinary Experiences</div>
+        <h1>Meetings & Events Brochure</h1>
+      </section>
 
-      <div class="book-area">
-        <div id="book" aria-label="Meetings and Events brochure"></div>
-      </div>
+      <section class="stage" id="stage" aria-label="Interactive brochure">
+        <div class="loading" id="loading" role="status">
+          <div class="spinner"></div>
+          <div id="loading-text">Preparing your brochure…</div>
+        </div>
 
-      <div class="status" id="status" role="status" aria-live="polite">
-        Preparing your brochure…
-      </div>
+        <div class="error" id="error" role="alert"></div>
+        <div id="book"></div>
+      </section>
 
-      <nav class="toolbar" aria-label="Brochure navigation">
-        <button class="tool-button" id="firstPage" title="First page" aria-label="First page">⇤</button>
-        <button class="tool-button" id="prevPage" title="Previous page" aria-label="Previous page">←</button>
-        <div class="page-counter" id="pageCounter" aria-live="polite">Page 1 / 14</div>
-        <button class="tool-button" id="nextPage" title="Next page" aria-label="Next page">→</button>
-        <button class="tool-button" id="lastPage" title="Last page" aria-label="Last page">⇥</button>
-        <button class="tool-button" id="fullscreen" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
+      <nav class="controls" aria-label="Page navigation">
+        <button class="btn" id="first-btn" type="button" title="First page" disabled>
+          <span aria-hidden="true">|◀</span>
+          <span class="btn-label">First</span>
+        </button>
+
+        <button class="btn" id="prev-btn" type="button" title="Previous page" disabled>
+          <span aria-hidden="true">←</span>
+          <span class="btn-label">Previous</span>
+        </button>
+
+        <div class="page-count" aria-live="polite">
+          <strong id="current-page">1</strong>
+          <span class="separator">/</span>
+          <span id="total-pages">14</span>
+        </div>
+
+        <button class="btn" id="next-btn" type="button" title="Next page" disabled>
+          <span class="btn-label">Next</span>
+          <span aria-hidden="true">→</span>
+        </button>
+
+        <button class="btn" id="last-btn" type="button" title="Last page" disabled>
+          <span class="btn-label">Last</span>
+          <span aria-hidden="true">▶|</span>
+        </button>
       </nav>
 
-      <div class="thumbnails" id="thumbnails" aria-label="Select a brochure page"></div>
+      <div class="status" id="status" aria-live="polite">
+        Loading brochure…
+      </div>
     </main>
-
-    <footer>
-      Radisson Blu Gorakhpur · Meetings &amp; Events
-    </footer>
   </div>
 
-  <noscript>
-    <div class="noscript">Please enable JavaScript to view the interactive brochure.</div>
-  </noscript>
-
   <script>
-    (() => {
-      'use strict';
+    "use strict";
 
-      const TOTAL_PAGES = 14;
-      const bookElement = document.getElementById('book');
-      const statusElement = document.getElementById('status');
-      const counterElement = document.getElementById('pageCounter');
-      const thumbnailsElement = document.getElementById('thumbnails');
+    // --------------------------------------------------
+    // CONFIGURATION
+    // Page images must be beside index.html.
+    // --------------------------------------------------
 
-      const images = Array.from({ length: TOTAL_PAGES }, (_, i) =>
-        `Page ${i + 1}.jpg`
+    const TOTAL_PAGES = 14;
+
+    const PAGE_IMAGES = Array.from(
+      { length: TOTAL_PAGES },
+      (_, i) => `./Page ${i + 1}.jpg`
+    );
+
+    const stage = document.getElementById("stage");
+    const bookElement = document.getElementById("book");
+    const loading = document.getElementById("loading");
+    const loadingText = document.getElementById("loading-text");
+    const errorBox = document.getElementById("error");
+    const statusBox = document.getElementById("status");
+
+    const currentPageText = document.getElementById("current-page");
+    document.getElementById("total-pages").textContent = TOTAL_PAGES;
+
+    const firstBtn = document.getElementById("first-btn");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const lastBtn = document.getElementById("last-btn");
+
+    const soundBtn = document.getElementById("sound-btn");
+    const soundIcon = document.getElementById("sound-icon");
+    const soundLabel = document.getElementById("sound-label");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+
+    let pageFlip = null;
+    let initialized = false;
+    let rebuilding = false;
+    let soundEnabled = true;
+    let audioContext = null;
+    let imageRatio = 0.75;
+    let resizeTimer = null;
+    let lastLayoutKey = "";
+
+    function setStatus(message) {
+      statusBox.textContent = message;
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(
+          new Error(`Unable to load image: ${src}`)
+        );
+
+        image.src = src;
+      });
+    }
+
+    // --------------------------------------------------
+    // PAGE CONTROLS
+    // --------------------------------------------------
+
+    function currentIndex() {
+      if (!pageFlip || !initialized) return 0;
+
+      try {
+        return pageFlip.getCurrentPageIndex();
+      } catch (_) {
+        return 0;
+      }
+    }
+
+    function updateControls(index) {
+      const i = Math.max(
+        0,
+        Math.min(TOTAL_PAGES - 1, Number(index) || 0)
       );
 
-      let pageFlip = null;
-      let currentPage = 0;
-      let initialized = false;
+      currentPageText.textContent = String(i + 1);
 
-      function setStatus(message, isError = false) {
-        statusElement.textContent = message;
-        statusElement.classList.toggle('error', isError);
+      firstBtn.disabled = !initialized || i === 0;
+      prevBtn.disabled = !initialized || i === 0;
+      nextBtn.disabled = !initialized || i === TOTAL_PAGES - 1;
+      lastBtn.disabled = !initialized || i === TOTAL_PAGES - 1;
+    }
+
+    function goToPage(index) {
+      if (!pageFlip || !initialized) return;
+
+      const target = Math.max(
+        0,
+        Math.min(TOTAL_PAGES - 1, index)
+      );
+
+      if (target !== currentIndex()) {
+        pageFlip.flip(target);
       }
+    }
 
-      function updateControls(pageIndex) {
-        currentPage = pageIndex;
+    firstBtn.addEventListener("click", () => goToPage(0));
 
-        counterElement.textContent =
-          `Page ${pageIndex + 1} / ${TOTAL_PAGES}`;
+    prevBtn.addEventListener("click", () => {
+      if (pageFlip && initialized) pageFlip.flipPrev();
+    });
 
-        document.getElementById('prevPage').disabled = pageIndex <= 0;
-        document.getElementById('firstPage').disabled = pageIndex <= 0;
-        document.getElementById('nextPage').disabled =
-          pageIndex >= TOTAL_PAGES - 1;
-        document.getElementById('lastPage').disabled =
-          pageIndex >= TOTAL_PAGES - 1;
+    nextBtn.addEventListener("click", () => {
+      if (pageFlip && initialized) pageFlip.flipNext();
+    });
 
-        thumbnailsElement.querySelectorAll('.thumb').forEach((thumb, i) => {
-          const active = i === pageIndex;
-          thumb.classList.toggle('active', active);
+    lastBtn.addEventListener("click", () => {
+      goToPage(TOTAL_PAGES - 1);
+    });
 
-          if (active) {
-            thumb.setAttribute('aria-current', 'page');
-            thumb.scrollIntoView({
-              behavior: 'smooth',
-              block: 'nearest',
-              inline: 'nearest'
-            });
-          } else {
-            thumb.removeAttribute('aria-current');
-          }
-        });
-      }
+    // --------------------------------------------------
+    // PAGE-TURN SOUND
+    // --------------------------------------------------
 
-      function createThumbnails() {
-        const fragment = document.createDocumentFragment();
+    function initializeAudio() {
+      if (!soundEnabled) return;
 
-        images.forEach((src, index) => {
-          const button = document.createElement('button');
-          button.className = 'thumb';
-          button.type = 'button';
-          button.title = `Go to page ${index + 1}`;
-          button.setAttribute('aria-label', `Go to page ${index + 1}`);
+      try {
+        const AudioCtx =
+          window.AudioContext || window.webkitAudioContext;
 
-          const img = document.createElement('img');
-          img.src = src;
-          img.alt = '';
-          img.loading = 'lazy';
+        if (!AudioCtx) return;
 
-          img.addEventListener('error', () => {
-            button.classList.add('missing');
-            button.title = `Page ${index + 1} image not found`;
-          });
+        if (!audioContext) audioContext = new AudioCtx();
 
-          button.appendChild(img);
-          button.addEventListener('click', () => {
-            if (pageFlip) pageFlip.flip(index);
-          });
+        if (audioContext.state === "suspended") {
+          audioContext.resume().catch(() => {});
+        }
+      } catch (_) {}
+    }
 
-          fragment.appendChild(button);
-        });
+    function playTurnSound() {
+      if (!soundEnabled) return;
 
-        thumbnailsElement.appendChild(fragment);
-      }
+      if (!audioContext) initializeAudio();
 
-      function checkImages() {
-        return Promise.all(images.map(src => new Promise(resolve => {
-          const img = new Image();
-          img.onload = () => resolve({ src, ok: true });
-          img.onerror = () => resolve({ src, ok: false });
-          img.src = src;
-        })));
-      }
+      if (!audioContext || audioContext.state !== "running") return;
 
-      function createBookPages() {
-        const fragment = document.createDocumentFragment();
+      try {
+        const duration = 0.1;
+        const now = audioContext.currentTime;
+        const length = Math.floor(
+          audioContext.sampleRate * duration
+        );
 
-        images.forEach((src, index) => {
-          const page = document.createElement('div');
-          page.className = 'page';
+        const buffer = audioContext.createBuffer(
+          1,
+          length,
+          audioContext.sampleRate
+        );
 
-          const img = document.createElement('img');
-          img.src = src;
-          img.alt = `Meetings and Events brochure, page ${index + 1}`;
-          img.draggable = false;
+        const data = buffer.getChannelData(0);
 
-          page.appendChild(img);
-          fragment.appendChild(page);
-        });
-
-        bookElement.replaceChildren(fragment);
-      }
-
-      async function initializeBook() {
-        if (initialized) return;
-
-        if (typeof St === 'undefined' || !St.PageFlip) {
-          setStatus(
-            'The page-turning library could not load. Check your internet connection and refresh.',
-            true
-          );
-          return;
+        for (let i = 0; i < length; i++) {
+          data[i] =
+            (Math.random() * 2 - 1) *
+            Math.pow(1 - i / length, 2);
         }
 
-        setStatus('Checking brochure pages…');
+        const source = audioContext.createBufferSource();
+        const filter = audioContext.createBiquadFilter();
+        const gain = audioContext.createGain();
 
-        const results = await checkImages();
-        const missing = results.filter(result => !result.ok);
+        source.buffer = buffer;
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(1300, now);
+        filter.frequency.exponentialRampToValueAtTime(
+          400,
+          now + duration
+        );
 
-        if (missing.length) {
-          setStatus(
-            `Missing ${missing.length} image(s): ${missing.map(x => x.src).join(', ')}. Check filenames and repository paths.`,
-            true
-          );
-          return;
-        }
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(
+          0.035,
+          now + 0.01
+        );
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          now + duration
+        );
 
-        createBookPages();
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioContext.destination);
 
-        const smallScreen = window.matchMedia('(max-width: 600px)').matches;
+        source.start(now);
+        source.stop(now + duration);
+      } catch (_) {}
+    }
 
-        pageFlip = new St.PageFlip(bookElement, {
-          width: 550,
-          height: 720,
-          size: 'stretch',
-          minWidth: 280,
-          maxWidth: 1100,
-          minHeight: 360,
-          maxHeight: 1450,
-          showCover: true,
-          drawShadow: true,
-          flippingTime: 850,
-          usePortrait: true,
-          startPage: 0,
-          startZIndex: 0,
-          autoSize: true,
-          maxShadowOpacity: 0.45,
-          mobileScrollSupport: true,
-          swipeDistance: 30,
-          clickEventForward: true,
-          useMouseEvents: true,
-          showPageCorners: true
-        });
+    function updateSoundButton() {
+      soundBtn.classList.toggle("active", soundEnabled);
+      soundBtn.setAttribute("aria-pressed", String(soundEnabled));
+      soundIcon.textContent = soundEnabled ? "♪" : "♫";
+      soundLabel.textContent = soundEnabled ? "Sound On" : "Sound Off";
+    }
 
-        pageFlip.loadFromHTML(bookElement.querySelectorAll('.page'));
+    soundBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
 
-        pageFlip.on('flip', event => {
-          updateControls(event.data);
-        });
+      if (soundEnabled) initializeAudio();
 
-        pageFlip.on('init', () => {
-          setStatus('Drag a corner, swipe, or use the navigation controls.');
-        });
+      updateSoundButton();
+    });
 
-        updateControls(0);
+    document.addEventListener(
+      "pointerdown",
+      initializeAudio,
+      { once: true }
+    );
+
+    // --------------------------------------------------
+    // RESPONSIVE PAGE DIMENSIONS
+    // Calculate from the actual usable viewer dimensions.
+    // --------------------------------------------------
+
+    function calculateLayout() {
+      const rect = stage.getBoundingClientRect();
+
+      const availableWidth = Math.max(180, rect.width - 8);
+      const availableHeight = Math.max(180, rect.height - 8);
+
+      const mobile = window.matchMedia(
+        "(max-width: 600px)"
+      ).matches;
+
+      const landscape = window.matchMedia(
+        "(orientation: landscape)"
+      ).matches;
+
+      // Mobile uses one page. Larger landscape screens can
+      // display a two-page spread when the width allows it.
+      const spread =
+        !mobile &&
+        landscape &&
+        availableWidth / availableHeight >= 1.65;
+
+      const visiblePages = spread ? 2 : 1;
+
+      const pageHeight = Math.max(
+        180,
+        Math.min(
+          availableHeight,
+          availableWidth / (imageRatio * visiblePages)
+        )
+      );
+
+      const pageWidth = pageHeight * imageRatio;
+
+      return {
+        pageWidth: Math.round(pageWidth),
+        pageHeight: Math.round(pageHeight),
+        visiblePages,
+        key: [
+          Math.round(pageWidth),
+          Math.round(pageHeight),
+          visiblePages
+        ].join("-")
+      };
+    }
+
+    function buildBookPages() {
+      bookElement.innerHTML = "";
+
+      PAGE_IMAGES.forEach((src, index) => {
+        const page = document.createElement("div");
+        page.className = "page";
+
+        const image = document.createElement("img");
+        image.src = src;
+        image.alt = `Meetings & Events brochure page ${index + 1}`;
+        image.draggable = false;
+        image.decoding = "async";
+
+        page.appendChild(image);
+        bookElement.appendChild(page);
+      });
+    }
+
+    // --------------------------------------------------
+    // CREATE PAGEFLIP INSTANCE
+    // --------------------------------------------------
+
+    function createFlipbook(layout, startAt = 0) {
+      if (
+        !window.St ||
+        typeof window.St.PageFlip !== "function"
+      ) {
+        throw new Error(
+          "PageFlip library did not load. Check your internet connection."
+        );
+      }
+
+      bookElement.style.width =
+        `${layout.pageWidth * layout.visiblePages}px`;
+
+      bookElement.style.height = `${layout.pageHeight}px`;
+
+      const flip = new window.St.PageFlip(bookElement, {
+        width: layout.pageWidth,
+        height: layout.pageHeight,
+
+        size: "fixed",
+        minWidth: layout.pageWidth,
+        maxWidth: layout.pageWidth,
+        minHeight: layout.pageHeight,
+        maxHeight: layout.pageHeight,
+
+        startPage: startAt,
+        showCover: true,
+        usePortrait: layout.visiblePages === 1,
+
+        drawShadow: true,
+        maxShadowOpacity: 0.4,
+        flippingTime: 800,
+
+        autoSize: false,
+        mobileScrollSupport: false,
+        showPageCorners: true,
+        disableFlipByClick: false,
+        useMouseEvents: true,
+        swipeDistance: 25
+      });
+
+      flip.on("init", () => {
         initialized = true;
+        rebuilding = false;
 
-        if (smallScreen) {
-          setStatus('Swipe to turn pages, or use the arrows below.');
+        loading.classList.add("hidden");
+        errorBox.classList.remove("visible");
+
+        updateControls(currentIndex());
+        setStatus(
+          "Turn the pages to explore the Meetings & Events brochure."
+        );
+      });
+
+      flip.on("flip", event => {
+        const index = typeof event.data === "number"
+          ? event.data
+          : currentIndex();
+
+        updateControls(index);
+        playTurnSound();
+      });
+
+      flip.on("changeState", event => {
+        if (event.data === "flipping") {
+          setStatus("Turning page…");
+        } else if (event.data === "read") {
+          setStatus("Explore the brochure.");
         }
+      });
+
+      flip.loadFromHTML(
+        bookElement.querySelectorAll(".page")
+      );
+
+      return flip;
+    }
+
+    // --------------------------------------------------
+    // INITIAL LOAD
+    // --------------------------------------------------
+
+    async function initialize() {
+      loading.classList.remove("hidden");
+      errorBox.classList.remove("visible");
+      loadingText.textContent = "Loading brochure pages…";
+      setStatus("Preparing your brochure…");
+
+      try {
+        const images = await Promise.all(
+          PAGE_IMAGES.map(loadImage)
+        );
+
+        imageRatio =
+          images[0].naturalWidth / images[0].naturalHeight;
+
+        if (!Number.isFinite(imageRatio) || imageRatio <= 0) {
+          imageRatio = 0.75;
+        }
+
+        buildBookPages();
+
+        const layout = calculateLayout();
+        lastLayoutKey = layout.key;
+        pageFlip = createFlipbook(layout, 0);
+
+      } catch (error) {
+        console.error(error);
+
+        loading.classList.add("hidden");
+        errorBox.classList.add("visible");
+
+        errorBox.textContent =
+          "The brochure could not be loaded. Check that Page 1.jpg through Page 14.jpg are in the same folder as index.html, with matching filenames. The PageFlip library also requires an internet connection. Details: " +
+          error.message;
+
+        setStatus("Unable to load the brochure.");
+      }
+    }
+
+    // --------------------------------------------------
+    // RESIZE / ORIENTATION CHANGES
+    // Preserve the current page when the screen changes.
+    // --------------------------------------------------
+
+    function handleResize() {
+      if (!initialized || rebuilding || !pageFlip) return;
+
+      clearTimeout(resizeTimer);
+
+      resizeTimer = setTimeout(() => {
+        if (!initialized || rebuilding || !pageFlip) return;
+
+        const layout = calculateLayout();
+
+        if (layout.key === lastLayoutKey) return;
+
+        const savedPage = currentIndex();
+
+        try {
+          rebuilding = true;
+          initialized = false;
+
+          loading.classList.remove("hidden");
+          loadingText.textContent = "Adjusting to your screen…";
+
+          const oldFlip = pageFlip;
+          pageFlip = null;
+
+          if (typeof oldFlip.destroy === "function") {
+            oldFlip.destroy();
+          }
+
+          buildBookPages();
+
+          lastLayoutKey = layout.key;
+          pageFlip = createFlipbook(layout, savedPage);
+
+        } catch (error) {
+          console.error(error);
+
+          rebuilding = false;
+          loading.classList.add("hidden");
+          setStatus("Please refresh the page to readjust the brochure.");
+        }
+      }, 250);
+    }
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    // Fullscreen
+    fullscreenBtn.addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (_) {
+        setStatus("Fullscreen is not available in this browser.");
+      }
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      const active = Boolean(document.fullscreenElement);
+
+      fullscreenBtn.classList.toggle("active", active);
+      fullscreenBtn.setAttribute("aria-pressed", String(active));
+
+      handleResize();
+    });
+
+    // Keyboard navigation
+    document.addEventListener("keydown", event => {
+      if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.target.closest("button, input, textarea, select")
+      ) {
+        return;
       }
 
-      document.getElementById('openBook').addEventListener('click', async () => {
-        document.getElementById('welcome').classList.add('hidden');
-        await initializeBook();
-      });
+      if (!pageFlip || !initialized) return;
 
-      document.getElementById('prevPage').addEventListener('click', () => {
-        if (pageFlip) pageFlip.flipPrev();
-      });
+      switch (event.key) {
+        case "ArrowRight":
+          event.preventDefault();
+          pageFlip.flipNext();
+          break;
 
-      document.getElementById('nextPage').addEventListener('click', () => {
-        if (pageFlip) pageFlip.flipNext();
-      });
+        case "ArrowLeft":
+          event.preventDefault();
+          pageFlip.flipPrev();
+          break;
 
-      document.getElementById('firstPage').addEventListener('click', () => {
-        if (pageFlip) pageFlip.flip(0);
-      });
+        case "Home":
+          event.preventDefault();
+          goToPage(0);
+          break;
 
-      document.getElementById('lastPage').addEventListener('click', () => {
-        if (pageFlip) pageFlip.flip(TOTAL_PAGES - 1);
-      });
+        case "End":
+          event.preventDefault();
+          goToPage(TOTAL_PAGES - 1);
+          break;
 
-      document.getElementById('fullscreen').addEventListener('click', async () => {
-        try {
-          if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-          } else {
-            await document.exitFullscreen();
+        case "Escape":
+          if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
           }
-        } catch (error) {
-          setStatus('Fullscreen is not available in this browser.', true);
-        }
-      });
+          break;
+      }
+    });
 
-      document.addEventListener('keydown', event => {
-        if (!pageFlip || !initialized) return;
-
-        const tag = event.target.tagName;
-        if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(tag)) return;
-
-        switch (event.key) {
-          case 'ArrowRight':
-          case 'PageDown':
-            event.preventDefault();
-            pageFlip.flipNext();
-            break;
-          case 'ArrowLeft':
-          case 'PageUp':
-            event.preventDefault();
-            pageFlip.flipPrev();
-            break;
-          case 'Home':
-            event.preventDefault();
-            pageFlip.flip(0);
-            break;
-          case 'End':
-            event.preventDefault();
-            pageFlip.flip(TOTAL_PAGES - 1);
-            break;
-        }
-      });
-
-      createThumbnails();
-      updateControls(0);
-    })();
+    // Start directly on Page 1. No thumbnails or intro screen.
+    updateSoundButton();
+    updateControls(0);
+    initialize();
   </script>
 </body>
 </html>
