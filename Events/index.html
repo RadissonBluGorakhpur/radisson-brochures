@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/lib/turn.min.js"></script>
     <style>
         body {
             background-color: #222;
@@ -15,8 +15,10 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: sans-serif;
         }
-        #flipbook-container {
+        #flipbook-wrapper {
+            position: relative;
             width: 95vw;
             height: 90vh;
             display: flex;
@@ -25,20 +27,29 @@
         }
         .page-bg {
             background-color: #fff;
-            background-size: contain;
+            background-size: 100% 100%;
             background-position: center;
             background-repeat: no-repeat;
             width: 100%;
             height: 100%;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        #instructions {
+            position: absolute;
+            bottom: 2%;
+            color: #888;
+            font-size: 14px;
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-<div id="flipbook-container">
-    <div id="flipbook">
-    </div>
+<div id="flipbook-wrapper">
+    <div id="flipbook"></div>
+    <div id="instructions">Click and drag corners, or use Left/Right arrow keys to turn pages</div>
 </div>
 
 <script>
@@ -46,16 +57,15 @@
         var flipbook = $('#flipbook');
         var totalPages = 14;
 
-        // Injects background images perfectly formatted for CSS
+        // Injects background images
         for (var i = 1; i <= totalPages; i++) {
             var isHardCover = (i === 1 || i === totalPages) ? ' hard' : '';
-            // Added %20 to properly encode the space in "Page 1.jpg"
             var pageHTML = '<div class="page-bg' + isHardCover + '" style="background-image: url(\'Page%20' + i + '.jpg\');"></div>';
             flipbook.append(pageHTML);
         }
 
-        var containerWidth = $('#flipbook-container').width();
-        var containerHeight = $('#flipbook-container').height();
+        var containerWidth = $('#flipbook-wrapper').width();
+        var containerHeight = $('#flipbook-wrapper').height();
         var bookWidth = 800; 
         var bookHeight = 400;
         var displayMode = 'double';
@@ -75,13 +85,27 @@
             acceleration: true,
             gradients: true,
             elevation: 50,
-            autoCenter: true
+            autoCenter: true,
+            when: {
+                turned: function(e, page) {
+                    $('#instructions').fadeOut(); // Hides instructions after the first page turn
+                }
+            }
         });
 
-        // Ensure it scales when the screen resizes or phone rotates
+        // KEYBOARD NAVIGATION (Left and Right Arrow Keys)
+        $(document).keydown(function(e){
+            if (e.keyCode == 37) {
+                flipbook.turn('previous');
+            } else if (e.keyCode == 39) {
+                flipbook.turn('next');
+            }
+        });
+
+        // Ensure it scales perfectly when resizing or rotating phone
         $(window).on('resize', function() {
-            var cW = $('#flipbook-container').width();
-            var cH = $('#flipbook-container').height();
+            var cW = $('#flipbook-wrapper').width();
+            var cH = $('#flipbook-wrapper').height();
             var bW = 800; 
             var bH = 400;
             var dMode = 'double';
