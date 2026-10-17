@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111110">
   <meta name="description" content="Meetings & Events at Radisson Blu Gorakhpur">
+
   <title>Meetings & Events | Radisson Blu Gorakhpur</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +21,7 @@
       --gold-light: #ead8ac;
       --bg: #111110;
       --muted: #aaa59b;
-      --glass: rgba(25, 24, 22, .82);
+      --glass: rgba(25, 24, 22, .84);
       --glass-border: rgba(245, 223, 177, .24);
     }
 
@@ -37,9 +38,10 @@
       font-family: "Montserrat", sans-serif;
     }
 
-    body { min-height: 0; }
-
-    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    button {
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     button:focus-visible {
       outline: 2px solid var(--gold-light);
@@ -59,11 +61,8 @@
     }
 
     .app:fullscreen {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      max-width: none;
-      max-height: none;
+      width: 100%;
+      height: 100%;
       background: var(--bg);
     }
 
@@ -122,7 +121,8 @@
       transition: background .2s, border-color .2s;
     }
 
-    .top-btn:hover, .top-btn.active {
+    .top-btn:hover,
+    .top-btn.active {
       color: var(--gold-light);
       border-color: var(--gold);
       background: rgba(197, 160, 89, .13);
@@ -172,20 +172,21 @@
       justify-content: center;
       padding: 4px 4px 82px;
       overflow: hidden;
-      contain: layout;
     }
 
     #book {
       position: relative;
       flex: 0 0 auto;
       margin: auto;
-      transform: scale(1);
+      transform: scale(var(--fit-scale, 1));
       transform-origin: center center;
       transition: transform .28s ease;
       will-change: transform;
     }
 
-    #book.zoomed { transform: scale(1.45); }
+    #book.zoomed {
+      transform: scale(calc(var(--fit-scale, 1) * 1.45));
+    }
 
     #book .page {
       overflow: hidden;
@@ -281,9 +282,10 @@
       background: var(--glass);
       -webkit-backdrop-filter: blur(22px) saturate(145%);
       backdrop-filter: blur(22px) saturate(145%);
-      box-shadow: 0 8px 35px rgba(0, 0, 0, .42),
-                  inset 0 1px 0 rgba(255, 255, 255, .07),
-                  0 0 18px rgba(197, 160, 89, .045);
+      box-shadow:
+        0 8px 35px rgba(0, 0, 0, .42),
+        inset 0 1px 0 rgba(255, 255, 255, .07),
+        0 0 18px rgba(197, 160, 89, .045);
     }
 
     .dock-btn {
@@ -304,7 +306,8 @@
       transition: color .2s, background .2s, border-color .2s, transform .2s;
     }
 
-    .dock-btn:hover:not(:disabled), .dock-btn.active {
+    .dock-btn:hover:not(:disabled),
+    .dock-btn.active {
       color: var(--gold-light);
       border-color: rgba(197, 160, 89, .42);
       background: rgba(197, 160, 89, .14);
@@ -530,14 +533,11 @@
 
     let pageFlip = null;
     let initialized = false;
-    let rebuilding = false;
     let soundEnabled = true;
     let zoomed = false;
     let audioContext = null;
     let imageRatio = 4 / 3;
-    let resizeTimer = null;
-    let rebuildVersion = 0;
-    let lastLayoutKey = "";
+    let fitTimer = null;
     let lastSoundTime = 0;
 
     function setStatus(message) {
@@ -555,7 +555,6 @@
 
     function currentIndex() {
       if (!pageFlip || !initialized) return 0;
-
       try {
         return pageFlip.getCurrentPageIndex();
       } catch (_) {
@@ -565,7 +564,6 @@
 
     function updateControls(index) {
       const i = Math.max(0, Math.min(TOTAL_PAGES - 1, Number(index) || 0));
-
       currentPageText.textContent = String(i + 1);
       firstBtn.disabled = !initialized || i === 0;
       prevBtn.disabled = !initialized || i === 0;
@@ -575,7 +573,6 @@
 
     function goToPage(index) {
       if (!pageFlip || !initialized) return;
-
       const target = Math.max(0, Math.min(TOTAL_PAGES - 1, index));
       if (target !== currentIndex()) pageFlip.flip(target);
     }
@@ -589,8 +586,7 @@
     });
     lastBtn.addEventListener("click", () => goToPage(TOTAL_PAGES - 1));
 
-    /* Realistic multi-layer paper-curl sound.
-       It is played on the "flipping" state, not after the page counter changes. */
+    /* Paper-curl sound */
 
     function initializeAudio() {
       if (!soundEnabled) return;
@@ -600,10 +596,7 @@
         if (!AudioCtx) return;
 
         if (!audioContext) audioContext = new AudioCtx();
-
-        if (audioContext.state === "suspended") {
-          audioContext.resume().catch(() => {});
-        }
+        if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
       } catch (_) {}
     }
 
@@ -623,7 +616,6 @@
       if (!soundEnabled) return;
 
       initializeAudio();
-
       if (!audioContext || audioContext.state !== "running") return;
 
       const nowMs = performance.now();
@@ -634,8 +626,8 @@
         const ctx = audioContext;
         const now = ctx.currentTime;
 
-        // Soft initial flutter.
-        const flutterDuration = 0.12;
+        // Initial flutter.
+        const flutterDuration = .12;
         const flutter = ctx.createBufferSource();
         const flutterFilter = ctx.createBiquadFilter();
         const flutterGain = ctx.createGain();
@@ -645,6 +637,7 @@
         flutterFilter.frequency.setValueAtTime(850, now);
         flutterFilter.frequency.exponentialRampToValueAtTime(1500, now + .045);
         flutterFilter.frequency.exponentialRampToValueAtTime(600, now + flutterDuration);
+
         flutterGain.gain.setValueAtTime(.0001, now);
         flutterGain.gain.exponentialRampToValueAtTime(.07, now + .012);
         flutterGain.gain.exponentialRampToValueAtTime(.0001, now + flutterDuration);
@@ -655,7 +648,7 @@
         flutter.start(now);
         flutter.stop(now + flutterDuration);
 
-        // Main paper sweep: a longer, filtered rustle.
+        // Main paper sweep.
         const sweepDuration = .36;
         const sweep = ctx.createBufferSource();
         const sweepFilter = ctx.createBiquadFilter();
@@ -678,7 +671,7 @@
         sweep.start(now + .008);
         sweep.stop(now + sweepDuration);
 
-        // Low, gentle page-body movement.
+        // Lower-frequency page movement.
         const bodyDuration = .23;
         const body = ctx.createBufferSource();
         const bodyFilter = ctx.createBiquadFilter();
@@ -716,7 +709,6 @@
       setStatus(soundEnabled ? "Page-turn sound enabled." : "Page-turn sound muted.");
     });
 
-    // Browsers require a gesture before allowing audio playback.
     document.addEventListener("pointerdown", initializeAudio, { once: true });
 
     /* Zoom */
@@ -740,237 +732,46 @@
       setStatus(zoomed ? "Zoom set to 145%. Select Reset to return to normal size." : "Normal brochure view.");
     });
 
-    /* Responsive page dimensions */
+    /* Keep the existing PageFlip instance alive on fullscreen changes.
+       Scale the rendered book to fit the new stage dimensions. */
 
-    function calculateLayout() {
-      const rect = stage.getBoundingClientRect();
-      const availableWidth = Math.max(180, rect.width - 12);
-      const availableHeight = Math.max(120, rect.height - 86);
+    function fitBookToStage() {
+      if (!pageFlip || !initialized) return;
 
-      const mobile = window.matchMedia("(max-width: 600px)").matches;
-      const landscape = window.matchMedia("(orientation: landscape)").matches;
-      const useSpread = !mobile && landscape && availableWidth / availableHeight >= 1.55;
-      const visiblePages = useSpread ? 2 : 1;
+      const stageRect = stage.getBoundingClientRect();
+      const availableWidth = Math.max(100, stageRect.width - 20);
+      const availableHeight = Math.max(100, stageRect.height - 100);
 
-      const pageWidthLimit = availableWidth / visiblePages;
-      const pageHeight = Math.min(availableHeight, pageWidthLimit / imageRatio);
-      const safeHeight = Math.max(100, pageHeight);
-      const pageWidth = safeHeight * imageRatio;
+      // Use the actual book dimensions, not the viewport dimensions.
+      const bookWidth = bookElement.offsetWidth;
+      const bookHeight = bookElement.offsetHeight;
 
-      return {
-        pageWidth: Math.max(100, Math.floor(pageWidth)),
-        pageHeight: Math.max(100, Math.floor(safeHeight)),
-        visiblePages,
-        key: [
-          Math.floor(pageWidth),
-          Math.floor(safeHeight),
-          visiblePages
-        ].join("-")
-      };
+      if (!bookWidth || !bookHeight) return;
+
+      const fitScale = Math.min(
+        availableWidth / bookWidth,
+        availableHeight / bookHeight
+      );
+
+      bookElement.style.setProperty("--fit-scale", String(Math.max(.1, fitScale)));
+      loading.classList.add("hidden");
     }
 
-    function buildBookPages() {
-      bookElement.innerHTML = "";
+    function scheduleFit() {
+      clearTimeout(fitTimer);
 
-      PAGE_IMAGES.forEach((src, index) => {
-        const page = document.createElement("div");
-        page.className = "page";
-
-        const image = document.createElement("img");
-        image.src = src;
-        image.alt = `Meetings & Events brochure page ${index + 1}`;
-        image.draggable = false;
-        image.decoding = "async";
-
-        page.appendChild(image);
-        bookElement.appendChild(page);
-      });
-    }
-
-    function createFlipbook(layout, startAt = 0, version = rebuildVersion) {
-      if (!window.St || typeof window.St.PageFlip !== "function") {
-        throw new Error("The page-flip library could not load. Check your internet connection.");
-      }
-
-      bookElement.style.width = `${layout.pageWidth * layout.visiblePages}px`;
-      bookElement.style.height = `${layout.pageHeight}px`;
-
-      const flip = new window.St.PageFlip(bookElement, {
-        width: layout.pageWidth,
-        height: layout.pageHeight,
-        size: "fixed",
-        minWidth: layout.pageWidth,
-        maxWidth: layout.pageWidth,
-        minHeight: layout.pageHeight,
-        maxHeight: layout.pageHeight,
-        startPage: Math.max(0, Math.min(TOTAL_PAGES - 1, startAt)),
-        showCover: true,
-        usePortrait: layout.visiblePages === 1,
-        drawShadow: true,
-        maxShadowOpacity: .38,
-        flippingTime: 850,
-        autoSize: false,
-        mobileScrollSupport: false,
-        showPageCorners: true,
-        disableFlipByClick: false,
-        useMouseEvents: true,
-        swipeDistance: 25
-      });
-
-      flip.on("init", () => {
-        // Ignore late init events from a destroyed instance.
-        if (version !== rebuildVersion || pageFlip !== flip) return;
-
-        initialized = true;
-        rebuilding = false;
-        loading.classList.add("hidden");
-        errorBox.classList.remove("visible");
-        updateControls(currentIndex());
-        setStatus("Turn the pages to explore our brochure.");
-      });
-
-      // Sound begins as soon as the page starts moving.
-      flip.on("changeState", event => {
-        if (version !== rebuildVersion || pageFlip !== flip) return;
-
-        if (event && event.data === "flipping") {
-          playPaperCurlSound();
-          setStatus("Turning page…");
-        } else {
-          setStatus("Explore the brochure.");
-        }
-      });
-
-      flip.on("flip", event => {
-        if (version !== rebuildVersion || pageFlip !== flip) return;
-
-        const index = event && typeof event.data === "number"
-          ? event.data
-          : currentIndex();
-
-        updateControls(index);
-      });
-
-      flip.loadFromHTML(bookElement.querySelectorAll(".page"));
-      return flip;
-    }
-
-    async function initialize() {
-      loading.classList.remove("hidden");
-      errorBox.classList.remove("visible");
-      loadingText.textContent = "Loading brochure pages…";
-      setStatus("Preparing your brochure…");
-
-      try {
-        const images = await Promise.all(PAGE_IMAGES.map(loadImage));
-        const firstImage = images[0];
-
-        imageRatio = firstImage.naturalWidth && firstImage.naturalHeight
-          ? firstImage.naturalWidth / firstImage.naturalHeight
-          : 4 / 3;
-
-        if (!Number.isFinite(imageRatio) || imageRatio <= 0) imageRatio = 4 / 3;
-
-        buildBookPages();
-
-        const layout = calculateLayout();
-        lastLayoutKey = layout.key;
-
-        pageFlip = createFlipbook(layout, 0, rebuildVersion);
-      } catch (error) {
-        console.error(error);
-        loading.classList.add("hidden");
-        errorBox.classList.add("visible");
-        errorBox.textContent =
-          "The brochure could not be loaded. Check that Page 1.jpg through Page 14.jpg are in the same folder as index.html, with matching filenames. The PageFlip library also requires an internet connection. Details: " +
-          error.message;
-        setStatus("Unable to load the brochure.");
-      }
-    }
-
-    /* Fullscreen-safe layout recovery.
-       Wait for the browser's viewport to settle, then rebuild only if
-       dimensions really changed. Preserve the current page number. */
-
-    function scheduleLayoutCheck(delay = 300) {
-      clearTimeout(resizeTimer);
-
-      resizeTimer = setTimeout(() => {
-        if (!pageFlip || !initialized || rebuilding) return;
-
-        const layout = calculateLayout();
-
-        if (layout.key === lastLayoutKey) {
-          // No rebuild needed: clear any stale loading overlay.
-          loading.classList.add("hidden");
-          return;
-        }
-
-        rebuildBook(layout, currentIndex());
-      }, delay);
-    }
-
-    function rebuildBook(layout, savedPage) {
-      if (rebuilding) return;
-
-      rebuilding = true;
-      initialized = false;
-      rebuildVersion++;
-
-      const thisVersion = rebuildVersion;
-      const oldFlip = pageFlip;
-      pageFlip = null;
-
-      loading.classList.remove("hidden");
-      loadingText.textContent = "Adjusting brochure to your screen…";
-      updateControls(savedPage);
-
-      try {
-        if (oldFlip && typeof oldFlip.destroy === "function") {
-          oldFlip.destroy();
-        }
-
-        // Wait one frame so the destroyed PageFlip wrapper is removed
-        // before creating the new instance.
+      fitTimer = setTimeout(() => {
         requestAnimationFrame(() => {
-          if (thisVersion !== rebuildVersion) return;
-
-          try {
-            bookElement.innerHTML = "";
-            bookElement.classList.toggle("zoomed", zoomed);
-
-            buildBookPages();
-            lastLayoutKey = layout.key;
-
-            pageFlip = createFlipbook(layout, savedPage, thisVersion);
-          } catch (error) {
-            console.error(error);
-            rebuilding = false;
-            initialized = false;
-            loading.classList.add("hidden");
-            errorBox.classList.add("visible");
-            errorBox.textContent =
-              "The brochure could not be resized. Please exit fullscreen and try again. Details: " +
-              error.message;
-            setStatus("Unable to resize the brochure.");
-          }
+          fitBookToStage();
         });
-      } catch (error) {
-        console.error(error);
-        rebuilding = false;
-        loading.classList.add("hidden");
-        setStatus("Unable to resize the brochure. Please refresh the page.");
-      }
+      }, 250);
     }
 
-    window.addEventListener("resize", () => scheduleLayoutCheck(350));
-    window.addEventListener("orientationchange", () => scheduleLayoutCheck(450));
+    window.addEventListener("resize", scheduleFit);
+    window.addEventListener("orientationchange", scheduleFit);
 
-    // Observe the actual viewing area, not just the window.
     if ("ResizeObserver" in window) {
-      const stageObserver = new ResizeObserver(() => {
-        if (initialized && !rebuilding) scheduleLayoutCheck(350);
-      });
+      const stageObserver = new ResizeObserver(() => scheduleFit());
       stageObserver.observe(stage);
     }
 
@@ -988,7 +789,7 @@
           await document.exitFullscreen();
         }
       } catch (error) {
-        console.error(error);
+        console.error("Fullscreen error:", error);
         setStatus("Fullscreen is unavailable in this browser.");
       }
     }
@@ -1001,11 +802,12 @@
 
       fullscreenBtn.classList.toggle("active", active);
       dockFullscreenBtn.classList.toggle("active", active);
+
       fullscreenBtn.setAttribute("aria-pressed", String(active));
       dockFullscreenBtn.setAttribute("aria-pressed", String(active));
 
-      // The fullscreenchange event can fire before dimensions settle.
-      scheduleLayoutCheck(500);
+      // Do not destroy or reload PageFlip here.
+      scheduleFit();
     });
 
     /* Keyboard navigation */
@@ -1062,6 +864,136 @@
           break;
       }
     });
+
+    /* Build the brochure once */
+
+    async function initialize() {
+      loading.classList.remove("hidden");
+      errorBox.classList.remove("visible");
+      loadingText.textContent = "Loading brochure pages…";
+      setStatus("Preparing your brochure…");
+
+      try {
+        const images = await Promise.all(PAGE_IMAGES.map(loadImage));
+        const firstImage = images[0];
+
+        imageRatio = firstImage.naturalWidth && firstImage.naturalHeight
+          ? firstImage.naturalWidth / firstImage.naturalHeight
+          : 4 / 3;
+
+        if (!Number.isFinite(imageRatio) || imageRatio <= 0) {
+          imageRatio = 4 / 3;
+        }
+
+        if (!window.St || typeof window.St.PageFlip !== "function") {
+          throw new Error("PageFlip library did not load. Check your internet connection.");
+        }
+
+        const stageRect = stage.getBoundingClientRect();
+        const availableWidth = Math.max(100, stageRect.width - 20);
+        const availableHeight = Math.max(100, stageRect.height - 100);
+
+        const mobile = window.matchMedia("(max-width: 600px)").matches;
+        const landscape = window.matchMedia("(orientation: landscape)").matches;
+        const spread = !mobile && landscape &&
+          availableWidth / availableHeight >= 1.55;
+
+        const visiblePages = spread ? 2 : 1;
+        const pageHeight = Math.min(
+          availableHeight,
+          availableWidth / visiblePages / imageRatio
+        );
+        const pageWidth = pageHeight * imageRatio;
+
+        const width = Math.max(100, Math.floor(pageWidth));
+        const height = Math.max(100, Math.floor(pageHeight));
+
+        bookElement.style.width = `${width * visiblePages}px`;
+        bookElement.style.height = `${height}px`;
+
+        bookElement.innerHTML = "";
+
+        PAGE_IMAGES.forEach((src, index) => {
+          const page = document.createElement("div");
+          page.className = "page";
+
+          const image = document.createElement("img");
+          image.src = src;
+          image.alt = `Meetings & Events brochure page ${index + 1}`;
+          image.draggable = false;
+          image.decoding = "async";
+
+          page.appendChild(image);
+          bookElement.appendChild(page);
+        });
+
+        pageFlip = new window.St.PageFlip(bookElement, {
+          width,
+          height,
+          size: "fixed",
+          minWidth: width,
+          maxWidth: width,
+          minHeight: height,
+          maxHeight: height,
+          startPage: 0,
+          showCover: true,
+          usePortrait: !spread,
+          drawShadow: true,
+          maxShadowOpacity: .38,
+          flippingTime: 850,
+          autoSize: false,
+          mobileScrollSupport: false,
+          showPageCorners: true,
+          disableFlipByClick: false,
+          useMouseEvents: true,
+          swipeDistance: 25
+        });
+
+        pageFlip.on("init", () => {
+          initialized = true;
+          loading.classList.add("hidden");
+          errorBox.classList.remove("visible");
+          updateControls(currentIndex());
+
+          // First fit happens after PageFlip has rendered its wrapper.
+          requestAnimationFrame(() => {
+            fitBookToStage();
+            scheduleFit();
+          });
+
+          setStatus("Turn the pages to explore our brochure.");
+        });
+
+        pageFlip.on("changeState", event => {
+          if (event && event.data === "flipping") {
+            playPaperCurlSound();
+            setStatus("Turning page…");
+          } else {
+            setStatus("Explore the brochure.");
+          }
+        });
+
+        pageFlip.on("flip", event => {
+          const index = event && typeof event.data === "number"
+            ? event.data
+            : currentIndex();
+
+          updateControls(index);
+        });
+
+        pageFlip.loadFromHTML(bookElement.querySelectorAll(".page"));
+      } catch (error) {
+        console.error(error);
+
+        loading.classList.add("hidden");
+        errorBox.classList.add("visible");
+        errorBox.textContent =
+          "The brochure could not be loaded. Check that Page 1.jpg through Page 14.jpg are in the same folder as index.html. The PageFlip library also requires an internet connection. Details: " +
+          error.message;
+
+        setStatus("Unable to load the brochure.");
+      }
+    }
 
     updateSoundButton();
     updateZoomButton();
