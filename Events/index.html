@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; user-select: none; }
         body {
-            background-color: #1a1a1a;
+            background: radial-gradient(circle at center, #2b2b2b 0%, #121212 100%);
             margin: 0;
             padding: 0;
             width: 100vw;
@@ -16,20 +17,58 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            font-family: sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            color: #e0e0e0;
         }
+
+        /* Luxury Top Bar */
+        header {
+            width: 100%;
+            padding: 12px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(18, 18, 18, 0.65);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+            z-index: 200;
+        }
+        .brand-title {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            letter-spacing: 2.5px;
+            color: #c5a059;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .brand-sub {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        /* Book Viewport */
         #book-wrapper {
             width: 92vw;
-            height: 82vh;
+            height: 78vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: grab;
         }
+        #book-wrapper.zoomed {
+            transform: scale(1.45);
+            cursor: move;
+        }
+
         .page {
             background-color: #ffffff;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .page img {
             width: 100%;
@@ -37,80 +76,48 @@
             object-fit: contain;
             display: block;
             background-color: #ffffff;
+            pointer-events: none;
         }
-        .controls {
-            margin-top: 12px;
+
+        /* Floating Glassmorphism Control Dock */
+        .controls-dock {
+            margin-bottom: 18px;
+            padding: 8px 18px;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
-            color: #ccc;
-            font-size: 14px;
-            z-index: 100;
+            background: rgba(25, 25, 25, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(197, 160, 89, 0.35);
+            border-radius: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+            z-index: 200;
         }
         .btn {
-            background: #333;
-            color: #fff;
-            border: 1px solid #555;
-            padding: 6px 16px;
-            border-radius: 4px;
+            background: transparent;
+            color: #e0e0e0;
+            border: none;
+            padding: 7px 13px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .btn:hover { background: #555; }
-    </style>
-</head>
-<body>
-
-<div id="book-wrapper">
-    <div id="flipbook"></div>
-</div>
-
-<div class="controls">
-    <button class="btn" id="prevBtn">&#8592; Prev</button>
-    <span id="pageInfo">Swipe or click corners to flip</span>
-    <button class="btn" id="nextBtn">Next &#8594;</button>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const flipbookEl = document.getElementById('flipbook');
-        const totalPages = 14;
-
-        for (let i = 1; i <= totalPages; i++) {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'page';
-            if (i === 1 || i === totalPages) {
-                pageDiv.setAttribute('data-density', 'hard');
-            }
-            pageDiv.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
-            flipbookEl.appendChild(pageDiv);
+        .btn:hover {
+            background: rgba(197, 160, 89, 0.2);
+            color: #c5a059;
         }
-
-        const pageFlip = new St.PageFlip(flipbookEl, {
-            width: 600,
-            height: 450,
-            size: "stretch",
-            minWidth: 280,
-            maxWidth: 1200,
-            minHeight: 210,
-            maxHeight: 900,
-            maxShadowOpacity: 0.5,
-            showCover: true,
-            mobileScrollSupport: false,
-            usePortrait: true
-        });
-
-        pageFlip.loadFromHTML(document.querySelectorAll('.page'));
-
-        document.getElementById('prevBtn').addEventListener('click', () => pageFlip.flipPrev());
-        document.getElementById('nextBtn').addEventListener('click', () => pageFlip.flipNext());
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') pageFlip.flipPrev();
-            if (e.key === 'ArrowRight') pageFlip.flipNext();
-        });
-    });
-</script>
-
-</body>
-</html>
+        .btn.active {
+            background: #c5a059;
+            color: #121212;
+            font-weight: 600;
+        }
+        .divider {
+            width: 1px;
+            height: 1
