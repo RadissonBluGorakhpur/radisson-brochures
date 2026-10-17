@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/blasten/turn.js@master/lib/turn.min.js"></script>
+    <!-- Modern, stable flipbook library (No jQuery required) -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
     <style>
         body {
             background-color: #222;
             margin: 0;
-            padding: 0;
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -17,109 +17,79 @@
             height: 100vh;
             font-family: sans-serif;
         }
-        #flipbook-wrapper {
-            position: relative;
-            width: 95vw;
-            height: 90vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .page-bg {
+        .page {
             background-color: #fff;
-            background-size: 100% 100%;
-            background-position: center;
-            background-repeat: no-repeat;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .page img {
             width: 100%;
             height: 100%;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            object-fit: contain;
+            background-color: #fff;
         }
         #instructions {
             position: absolute;
-            bottom: 2%;
-            color: #888;
+            bottom: 20px;
+            color: #aaa;
             font-size: 14px;
             text-align: center;
             width: 100%;
             pointer-events: none;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
 
-<div id="flipbook-wrapper">
-    <div id="flipbook"></div>
-    <div id="instructions">Click and drag corners, or use Left/Right arrow keys to turn pages</div>
-</div>
+<!-- On-screen instructions -->
+<div id="instructions">Swipe, drag corners, or use Left/Right arrow keys</div>
+
+<!-- The book container -->
+<div id="flipbook"></div>
 
 <script>
-    $(window).ready(function() {
-        var flipbook = $('#flipbook');
-        var totalPages = 14;
-
-        // Injects background images
-        for (var i = 1; i <= totalPages; i++) {
-            var isHardCover = (i === 1 || i === totalPages) ? ' hard' : '';
-            var pageHTML = '<div class="page-bg' + isHardCover + '" style="background-image: url(\'Page%20' + i + '.jpg\');"></div>';
-            flipbook.append(pageHTML);
-        }
-
-        var containerWidth = $('#flipbook-wrapper').width();
-        var containerHeight = $('#flipbook-wrapper').height();
-        var bookWidth = 800; 
-        var bookHeight = 400;
-        var displayMode = 'double';
+    document.addEventListener('DOMContentLoaded', function() {
+        const flipbookEl = document.getElementById('flipbook');
         
-        if (containerWidth < 600) {
-            displayMode = 'single';
-            bookWidth = 400; 
+        // --- CHANGE THIS NUMBER FOR YOUR OTHER FOLDERS ---
+        const totalPages = 14; 
+
+        // 1. Inject the pages automatically
+        for (let i = 1; i <= totalPages; i++) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'page';
+            // %20 handles the spaces in file names. The onerror catches extension issues.
+            pageDiv.innerHTML = '<img src="Page%20' + i + '.jpg" onerror="this.src=\'Page%20' + i + '.JPG\'" alt="Page ' + i + '">';
+            flipbookEl.appendChild(pageDiv);
         }
 
-        var scale = Math.min(containerWidth / bookWidth, containerHeight / bookHeight);
-
-        // Initialize the flipbook
-        flipbook.turn({
-            width: bookWidth * scale,
-            height: bookHeight * scale,
-            display: displayMode,
-            acceleration: true,
-            gradients: true,
-            elevation: 50,
-            autoCenter: true,
-            when: {
-                turned: function(e, page) {
-                    $('#instructions').fadeOut(); // Hides instructions after the first page turn
-                }
-            }
+        // 2. Initialize the modern PageFlip engine
+        const pageFlip = new St.PageFlip(flipbookEl, {
+            width: 500, // Base width
+            height: 500, // Base height (1:1 ratio for your 210x210mm brochure)
+            size: "fit", // Automatically fits the screen flawlessly
+            minWidth: 300,
+            maxWidth: 1000,
+            minHeight: 300,
+            maxHeight: 1000,
+            showCover: true, // Makes Page 1 a hard cover
+            mobileScrollSupport: false,
+            usePortrait: true // Auto-switches to single page on phones
         });
 
-        // KEYBOARD NAVIGATION (Left and Right Arrow Keys)
-        $(document).keydown(function(e){
-            if (e.keyCode == 37) {
-                flipbook.turn('previous');
-            } else if (e.keyCode == 39) {
-                flipbook.turn('next');
-            }
+        // Load the pages into the book
+        pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 37) pageFlip.flipPrev();
+            if (e.keyCode === 39) pageFlip.flipNext();
         });
 
-        // Ensure it scales perfectly when resizing or rotating phone
-        $(window).on('resize', function() {
-            var cW = $('#flipbook-wrapper').width();
-            var cH = $('#flipbook-wrapper').height();
-            var bW = 800; 
-            var bH = 400;
-            var dMode = 'double';
-            
-            if (cW < 600) {
-                dMode = 'single';
-                bW = 400; 
-            } else {
-                dMode = 'double';
-            }
-
-            var s = Math.min(cW / bW, cH / bH);
-            flipbook.turn('display', dMode);
-            flipbook.turn('size', bW * s, bH * s);
+        // Hide instructions once the user turns a page
+        pageFlip.on('flip', function() {
+            document.getElementById('instructions').style.display = 'none';
         });
     });
 </script>
