@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meetings & Events | Radisson Blu Gorakhpur</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Using unpkg CDN which bypasses tracking protection blocks -->
-    <script src="https://unpkg.com/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
     <style>
         * { box-sizing: border-box; user-select: none; }
         body {
@@ -48,29 +46,31 @@
             color: #aaa;
             text-transform: uppercase;
         }
-        #book-wrapper {
-            width: 95vw;
-            height: 78vh;
+        #book-container {
+            width: 90vw;
+            height: 76vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
         }
-        #book-wrapper.zoomed {
-            transform: scale(1.35);
-        }
-        .page {
-            background-color: #ffffff;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .page img {
+        .slide {
+            display: none;
             width: 100%;
             height: 100%;
+            text-align: center;
+        }
+        .slide.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide img {
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            display: block;
-            background-color: #ffffff;
-            pointer-events: none;
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
         .controls-dock {
             margin-bottom: 18px;
@@ -89,7 +89,7 @@
             background: transparent;
             color: #e0e0e0;
             border: none;
-            padding: 7px 13px;
+            padding: 7px 14px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 12px;
@@ -100,11 +100,6 @@
         .btn:hover {
             background: rgba(197, 160, 89, 0.2);
             color: #c5a059;
-        }
-        .btn.active {
-            background: #c5a059;
-            color: #121212;
-            font-weight: 600;
         }
         .divider {
             width: 1px;
@@ -128,8 +123,8 @@
     <div class="brand-sub">Meetings & Events</div>
 </header>
 
-<div id="book-wrapper">
-    <div id="flipbook"></div>
+<div id="book-container">
+    <!-- Slides injected dynamically -->
 </div>
 
 <div class="controls-dock">
@@ -137,103 +132,62 @@
     <span id="pageCounter">1 / 14</span>
     <button class="btn" id="nextBtn">Next &#8594;</button>
     <div class="divider"></div>
-    <button class="btn" id="zoomBtn">Zoom</button>
-    <button class="btn active" id="soundBtn">Sound</button>
-    <button class="btn" id="fsBtn">&#x26F6;</button>
+    <button class="btn" id="fsBtn">&#x26F6; Fullscreen</button>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const totalPages = 14;
-        const flipbookEl = document.getElementById('flipbook');
-        const bookWrapper = document.getElementById('book-wrapper');
+        let currentIndex = 0;
+        const container = document.getElementById('book-container');
         const pageCounter = document.getElementById('pageCounter');
 
+        // Build slides
         for (let i = 1; i <= totalPages; i++) {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'page';
-            if (i === 1 || i === totalPages) {
-                pageDiv.setAttribute('data-density', 'hard');
-            }
-            pageDiv.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
-            flipbookEl.appendChild(pageDiv);
+            const slide = document.div = document.createElement('div');
+            slide.className = 'slide' + (i === 1 ? ' active' : '');
+            slide.innerHTML = '<img src="Page%20' + i + '.jpg" alt="Page ' + i + '">';
+            container.appendChild(slide);
         }
 
-        setTimeout(() => {
-            if (typeof PageFlip === 'undefined') {
-                alert('Library failed to load from unpkg.');
-                return;
+        const slides = document.querySelectorAll('.slide');
+
+        function showSlide(index) {
+            slides.forEach((slide, idx) => {
+                slide.classList.toggle('active', idx === index);
+            });
+            pageCounter.textContent = (index + 1) + ' / ' + totalPages;
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalPages;
+            showSlide(currentIndex);
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalPages) % totalPages;
+            showSlide(currentIndex);
+        });
+
+        // Keyboard arrows support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                currentIndex = (currentIndex + 1) % totalPages;
+                showSlide(currentIndex);
+            } else if (e.key === 'ArrowLeft') {
+                currentIndex = (currentIndex - 1 + totalPages) % totalPages;
+                showSlide(currentIndex);
             }
+        });
 
-            const pageFlip = new PageFlip(flipbookEl, {
-                width: 600,
-                height: 450,
-                size: "stretch",
-                minWidth: 280,
-                maxWidth: 1200,
-                minHeight: 210,
-                maxHeight: 900,
-                maxShadowOpacity: 0.5,
-                showCover: true,
-                mobileScrollSupport: false,
-                usePortrait: true
-            });
-
-            pageFlip.loadFromHTML(document.querySelectorAll('.page'));
-
-            let soundEnabled = true;
-            let audioCtx = null;
-            function playFlipSound() {
-                if (!soundEnabled) return;
-                try {
-                    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioCtx.state === 'suspended') audioCtx.resume();
-                    const duration = 0.22;
-                    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let j = 0; j < buffer.length; j++) {
-                        data[j] = (Math.random() * 2 - 1) * Math.sin((j/buffer.length) * Math.PI) * 0.28;
-                    }
-                    const noise = audioCtx.createBufferSource();
-                    noise.buffer = buffer;
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'bandpass';
-                    filter.frequency.value = 900;
-                    noise.connect(filter);
-                    filter.connect(audioCtx.destination);
-                    noise.start();
-                } catch(e) {}
+        // Fullscreen toggle
+        document.getElementById('fsBtn').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
             }
-
-            pageFlip.on('flip', (e) => {
-                playFlipSound();
-                pageCounter.textContent = (e.data + 1) + ' / ' + totalPages;
-            });
-
-            document.getElementById('prevBtn').addEventListener('click', () => pageFlip.flipPrev());
-            document.getElementById('nextBtn').addEventListener('click', () => pageFlip.flipNext());
-
-            let isZoomed = false;
-            document.getElementById('zoomBtn').addEventListener('click', () => {
-                isZoomed = !isZoomed;
-                bookWrapper.classList.toggle('zoomed', isZoomed);
-                document.getElementById('zoomBtn').classList.toggle('active', isZoomed);
-            });
-
-            document.getElementById('soundBtn').addEventListener('click', () => {
-                soundEnabled = !soundEnabled;
-                document.getElementById('soundBtn').classList.toggle('active', soundEnabled);
-                document.getElementById('soundBtn').textContent = soundEnabled ? 'Sound' : 'Muted';
-            });
-
-            document.getElementById('fsBtn').addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(() => {});
-                } else {
-                    document.exitFullscreen().catch(() => {});
-                }
-            });
-        }, 200);
+        });
     });
 </script>
 
